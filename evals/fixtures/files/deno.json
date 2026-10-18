@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "run": "deno run --allow-read --allow-write --allow-run src/main.ts",
+    "check": "deno check src/**/*.ts"
+  },
+  "compilerOptions": { "strict": true }
+}

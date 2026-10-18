@@ -1,0 +1,35 @@
+{
+  "kind": "paired-agent-trials",
+  "attempts": [
+    {
+      "pair": "cli-01",
+      "arm": "control",
+      "case": "cli",
+      "repeat": 1,
+      "model": "record-exact-model-and-version",
+      "request_sha256": "record-the-shared-request-hash",
+      "budget": { "seconds": 600, "tokens": 16000 },
+      "tools": ["record-identical-tool-access"],
+      "report": "cli-control-01.report.json",
+      "seconds": null,
+      "cost_usd": null,
+      "manual_repairs": null,
+      "review": null
+    },
+    {
+      "pair": "cli-01",
+      "arm": "skill",
+      "case": "cli",
+      "repeat": 1,
+      "model": "record-exact-model-and-version",
+      "request_sha256": "record-the-shared-request-hash",
+      "budget": { "seconds": 600, "tokens": 16000 },
+      "tools": ["record-identical-tool-access"],
+      "report": "cli-skill-01.report.json",
+      "seconds": null,
+      "cost_usd": null,
+      "manual_repairs": null,
+      "review": null
+    }
+  ]
+}

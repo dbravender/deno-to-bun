@@ -1,0 +1,17 @@
+{
+  "imports": {
+    "preact": "npm:preact@10.29.0",
+    "preact/jsx-runtime": "npm:preact@10.29.0/jsx-runtime",
+    "@lib/": "./src/lib/"
+  },
+  "tasks": {
+    "build": "deno bundle --platform=browser --format=iife src/main.tsx -o public/app.js",
+    "check": "deno check src/**/*.ts src/**/*.tsx"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "lib": ["dom", "esnext", "deno.ns"]
+  }
+}
