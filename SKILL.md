@@ -48,8 +48,11 @@ identify that blocker rather than faking compatibility.
   deployment protections, and install-script trust decisions. A static browser
   project does not need a new server or framework.
 - Port or explicitly disclose remaining format/lint tools. First match exclusion
-  scopes and inspect a read-only check. If style churn is approved, format
-  automatically and replace the old gate; do not leave competing formatters.
+  scopes and inspect a read-only check. Prefer native `bun fmt` on stable Bun
+  1.4.4 or newer; pin a compatible stable version in CI. Use
+  `bun fmt --no-script --check` to bypass project scripts. If style churn is
+  approved, format automatically and replace the old gate; do not leave competing
+  formatters. Verify lint support separately.
 - Update shell launchers, hooks, CI, and docs. If removing Deno completely, remove
   obsolete config/locks/proxies once no consumer needs them. Do not relabel old
   benchmark results as measurements of the new runtime.

@@ -7,9 +7,11 @@
 - Native-looking package scripts (`check`, `fmt`, `lint`) can shadow Bun commands.
   Prefer unambiguous script names such as `typecheck`, `format:check`, and
   `lint:check`. Never hide a retained Deno command behind a native-looking alias.
-- On the verified Bun 1.4.3 binary, `bun check` exists but `--no-script`, native
-  `fmt`, and native `lint` do not. Native fmt/lint were verified in a later canary.
-  These are historical observations, not an instruction to require that canary.
+- Stable Bun 1.4.4 ships native `bun fmt`, including `--no-script` and `--check`.
+  Verified against the official macOS ARM64 binary on 2026-10-23: a read-only check
+  exits 1 for unformatted code, formatting then checking exits 0, and `--no-script`
+  bypasses a project's `fmt` script. Native `bun lint` is absent in that release;
+  do not require canary merely to replace a working lint gate.
 - Preserve compiler strictness and environments. Bun CLI checking need not install
   a separate TypeScript compiler; runtime declarations may need `@types/bun` and
   explicit `types`. Declaration emission and editor language services are separate.
@@ -65,6 +67,11 @@
 
 ## Format, lint, and operations
 
+- Prefer stable Bun 1.4.4 or newer for native formatting. Use
+  `bun fmt --no-script --check` for the initial read-only check and CI, and
+  `bun fmt --no-script` to format after approval. Carry over Deno format options
+  and exclusions into `[fmt]` in `bunfig.toml`; existing Prettier/oxfmt configs
+  are also supported. Deno ignore comments need translation to `prettier-ignore`.
 - Match exclusions before writing: generated assets, verbatim licensed material,
   hidden settings, and historical documents may need protection. Matching common
   style options does not make different formatter algorithms identical.
@@ -78,3 +85,5 @@
 
 Official references: https://bun.com/docs, https://docs.deno.com/runtime/, and
 https://jsr.io/docs/using-packages. Consult only relevant sections when needed.
+Stable formatter release: https://bun.com/blog/bun-v1.4.4; configuration and CLI:
+https://bun.com/docs/format.

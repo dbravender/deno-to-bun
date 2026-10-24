@@ -7,11 +7,11 @@ The skill does not monitor releases or modify itself when a user loads it.
       negative controls, and paired-comparison safeguards. These test the evaluator;
       paired agent trials remain outstanding below.
 
-- [ ] Verify a stable Bun release with native `bun fmt` and `bun lint`, then
-      refresh historical capability notes. Last checked 2026-10-18: stable 1.4.3;
-      native fmt/lint verified separately in 1.4.4-canary.1. Do not assume a future
-      version number or release date. Verify an isolated official binary, not just
-      live documentation, before changing guidance.
+- [x] Verify stable native `bun fmt` and refresh capability guidance. Verified
+      2026-10-23 with the official Bun 1.4.4 macOS ARM64 binary: read-only failure,
+      formatting, idempotent success, and `--no-script` bypass of a `fmt` script.
+- [ ] Verify a stable release with native `bun lint`; it is absent in the official
+      Bun 1.4.4 binary. Keep lint capability checks separate from formatter support.
 - [ ] Run paired, fresh-session migration trials with and without the skill,
       using the same model, request, tools, runtime versions, and budget. Record
       repeated outcomes; evaluator self-tests are not evidence that the skill helps.
