@@ -77,8 +77,9 @@ UTF-8 replacement, with a negative control for accidental BOM stripping.
    ```
 
    The printed request is the same in both arms. Give one session that request
-   without the skill; give the paired session the same request plus `SKILL.md`
-   and its conditional `references/pitfalls.md`. Do not give either session this
+   without the skill; give the paired session the same request plus
+   `skills/deno-to-bun/SKILL.md` and its conditional `references/pitfalls.md`.
+   Do not give either session this
    directory, reference solutions, self-test reports, or acceptance-test source.
 
 3. Counterbalance which arm runs first. Prevent session memory or fixes from one
