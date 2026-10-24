@@ -1,0 +1,135 @@
+--- original/.github/workflows/check.yml
++++ candidate/.github/workflows/check.yml
+@@ -5,5 +5,8 @@
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+-      - uses: denoland/setup-deno@v2
+-      - run: deno task check
++      - uses: oven-sh/setup-bun@v2
++        with:
++          bun-version: 1.4.4
++      - run: bun install --frozen-lockfile
++      - run: bun run check
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,20 @@
++# Bun migration
++
++Use Bun 1.4.4. Install dependencies with `bun install --frozen-lockfile`.
++
++- `bun run run [name] [count]` replaces the previous run task.
++- `bash scripts/run.sh [name] [count]` remains the shell entry point.
++- `bun run check`, `make check`, and `bun run typecheck` run TypeScript with strict checking and no output emission.
++- `bun src/main.ts [name] [count]` runs the CLI directly. The shebang also uses Bun.
++
++The JSON schema, default arguments, name trimming, number conversion, environment reads, and invalid-count exit status (2) are unchanged. The `@lib/` alias moved from the import map to TypeScript paths, which Bun resolves at runtime.
++
++There were no runtime dependencies, tests, serve tasks, or build tasks in the original project. TypeScript 6.0.3 matches the supplied baseline checker; Bun type definitions are pinned to 1.4.4. `bun.lock` fixes their transitive dependencies. CI installs the pinned Bun runtime and uses the frozen lockfile before checking.
++
++## Environment and security
++
++Automatic `.env` loading is disabled in `bunfig.toml` and explicitly in the scripted runtime invocations, preserving inherited-environment behavior. Bun documents this configuration at https://bun.com/docs/runtime/environment-variables.
++
++The original runtime permitted environment access with `--allow-env` but denied filesystem, network, and subprocess access by default. Bun does not enforce that permission boundary: the program and any future dependency run with the operating-system permissions of the invoking account. Use an external sandbox when that isolation is required. The CLI itself adds no filesystem, network, or subprocess operations.
++
++Formatter and linter replacement are outside this migration's scope.
+--- original/Makefile
++++ candidate/Makefile
+@@ -1,3 +1,3 @@
+ .PHONY: check
+ check:
+-	deno task check
++	bun run check
+--- original/bunfig.toml
++++ candidate/bunfig.toml
+@@ -0,0 +1,2 @@
++# Match the original CLI: read the inherited environment only.
++env = false
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,8 +0,0 @@
+-{
+-  "imports": { "@lib/": "./src/lib/" },
+-  "tasks": {
+-    "run": "deno run --allow-env src/main.ts",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,14 @@
++{
++  "name": "greeting-cli",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "run": "bun --no-env-file src/main.ts",
++    "check": "bun run typecheck",
++    "typecheck": "tsc --noEmit"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4",
++    "typescript": "6.0.3"
++  }
++}
+--- original/scripts/run.sh
++++ candidate/scripts/run.sh
+@@ -1,4 +1,4 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+ cd "$(dirname "$0")/.."
+-deno run --allow-env src/main.ts "$@"
++bun --no-env-file src/main.ts "$@"
+--- original/src/main.ts
++++ candidate/src/main.ts
+@@ -1,15 +1,15 @@
+-#!/usr/bin/env -S deno run --allow-env
++#!/usr/bin/env -S bun --no-env-file
+ import { greet } from "@lib/greet.ts";
+ 
+-const [name = "world", countText = "1"] = Deno.args;
++const [name = "world", countText = "1"] = process.argv.slice(2);
+ const count = Number(countText);
+ if (!Number.isInteger(count) || count < 1) {
+   console.error("count must be a positive integer");
+-  Deno.exit(2);
++  process.exit(2);
+ }
+ console.log(JSON.stringify({
+   message: greet(name),
+   count,
+-  mode: Deno.env.get("APP_MODE") ?? null,
+-  implicit: Deno.env.get("EVAL_IMPLICIT_ENV") ?? null,
++  mode: process.env.APP_MODE ?? null,
++  implicit: process.env.EVAL_IMPLICIT_ENV ?? null,
+ }));
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,21 @@
++{
++  "compilerOptions": {
++    "target": "ESNext",
++    "module": "ESNext",
++    "moduleResolution": "Bundler",
++    "strict": true,
++    "noEmit": true,
++    "allowImportingTsExtensions": true,
++    "types": [
++      "bun"
++    ],
++    "paths": {
++      "@lib/*": [
++        "./src/lib/*"
++      ]
++    }
++  },
++  "include": [
++    "src/**/*.ts"
++  ]
++}

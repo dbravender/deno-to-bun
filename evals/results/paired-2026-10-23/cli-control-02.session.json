@@ -1,0 +1,15 @@
+{
+  "arm": "CONTROL",
+  "start_epoch": 1792801781,
+  "end_epoch": 1792801875,
+  "seconds": 94,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "34 assertions passed: defaults, trimming, numeric conversion, inherited environment, invalid-count errors/status, .env isolation, negative typecheck probe",
+    "bun run typecheck passed",
+    "make check passed",
+    "bun install --frozen-lockfile --offline passed"
+  ],
+  "handoff": "Migrated CLI, alias, shell wrapper, Make target and CI; removed deno.json; generated pinned bun.lock; documented usage and security differences in MIGRATION.md. No original tests or build/serve tasks existed. No deployment or commit performed."
+}

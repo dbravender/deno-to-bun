@@ -1,0 +1,43 @@
+{
+  "case": "files",
+  "runtime": "bun",
+  "passed": true,
+  "checks": [
+    {
+      "name": "frozen-install",
+      "passed": true,
+      "seconds": 0.047
+    },
+    {
+      "name": "no-deno-fallbacks",
+      "passed": true,
+      "seconds": 0.02
+    },
+    {
+      "name": "security-handoff",
+      "passed": true,
+      "seconds": 0.0
+    },
+    {
+      "name": "typecheck",
+      "passed": true,
+      "seconds": 1.115
+    },
+    {
+      "name": "typecheck-rejects-error",
+      "passed": true,
+      "seconds": 0.965
+    },
+    {
+      "name": "files-behavior",
+      "passed": true,
+      "seconds": 0.194
+    }
+  ],
+  "evaluator_sha256": "b3b029e89cc24144f8a35fbf5647e3c33e4142b85d8180c754dc8a55098eb6d7",
+  "fresh_dependency_tree": true,
+  "versions": {
+    "bun": "1.4.4",
+    "deno": "deno 2.9.7 (stable, release, aarch64-apple-darwin)\nv8 15.0.245.2-rusty\ntypescript 6.0.3"
+  }
+}

@@ -120,13 +120,13 @@ class Evaluation:
     def typecheck(self):
         self.success(self.task("typecheck"))
 
-    def rejects_type_error(self):
+    def rejects_type_error(self, task="typecheck"):
         path = self.target / "src/evaluation-type-probe.ts"
         require(not path.exists(), "Reserved probe path already exists")
         path.write_text('export const evaluationNumber: number = "not a number";\n'
                         'export function implicitAnyProbe(value) { return value; }\n')
         try:
-            result = self.task("typecheck")
+            result = self.task(task)
             text = result.stdout + result.stderr
             require(result.returncode != 0 and "TS2322" in text and "TS7006" in text,
                     "Type-check task did not reject assignment and implicit-any probes")
@@ -155,8 +155,18 @@ class Evaluation:
         require(workflow.exists(), "CI workflow was deleted rather than migrated")
         if self.runtime == "bun":
             text = workflow.read_text()
-            require("bun" in text and "--frozen-lockfile" in text and "typecheck" in text,
-                    "CI must install frozen dependencies and run native checking")
+            # Inspect literal run steps; then test the invoked task, including aliases.
+            tasks = re.findall(r"(?m)^\s*(?:-\s+run:\s*)?bun\s+run\s+([\w:-]+)\s*(?:#.*)?$", text)
+            require("--frozen-lockfile" in text and tasks,
+                    "CI must install frozen dependencies and run a checking task")
+            for task in tasks:
+                try:
+                    self.rejects_type_error(task)
+                    break
+                except AssertionError:
+                    continue
+            else:
+                raise AssertionError("No CI task rejected assignment and implicit-any probes")
 
     def files(self):
         directory = self.scratch / "data"
@@ -169,6 +179,11 @@ class Evaluation:
         require(path.read_text() == "héllo 🎲 trailing content", "Failed creation damaged original file")
         self.success(self.task("run", "replace", path, "short"))
         require(path.read_text() == "short", "Replacement must truncate, not append")
+        encoded = directory / "encoded.txt"
+        encoded.write_bytes(b"\xef\xbb\xbfa\xff")
+        require(self.data("read", encoded) == "\ufeffa\ufffd",
+                "Text decoding must preserve the UTF-8 BOM and replace malformed bytes")
+        encoded.unlink()
         (directory / "subdirectory").mkdir()
         require(self.data("list", directory) == ["result.txt"], "Directory entry types changed")
         require(self.data("missing", directory / "absent") == {"missing": True}, "Missing-file handling changed")
@@ -389,12 +404,28 @@ def selftest(work, bun, deno):
         require(old in text, f"Mutation anchor not found: {old}")
         path.write_text(text.replace(old, new))
 
+    def ci_alias(path, command):
+        package = path / "package.json"
+        config = json.loads(package.read_text())
+        config["scripts"]["typecheck"] = "bun check --no-script"
+        config["scripts"]["check"] = command
+        package.write_text(json.dumps(config, indent=2) + "\n")
+        replace(path / ".github/workflows/check.yml", "bun run typecheck", "bun run check")
+
+    alias = work / "positive-ci-alias"
+    shutil.copytree(work / "cli-reference", alias)
+    ci_alias(alias, "bun run typecheck")
+    results.append(evaluate_copy("cli", alias, "bun", bun, deno))
+    negative("fake-ci-alias", "cli", lambda p: ci_alias(p, "echo success"))
+    require(controls[-1]["failed_checks"] == ["cli-behavior"],
+            "Fake CI alias must fail CI checking without breaking the real typecheck task")
     negative("silent-typecheck", "cli", lambda p: replace(p / "package.json", '"typecheck": "bun check"', '"typecheck": "echo success"'))
     negative("weakened-types", "cli", lambda p: replace(p / "tsconfig.json", '"strict": true', '"strict": false'))
     negative("shell-fallback", "cli", lambda p: replace(p / "scripts/run.sh", "bun src/main.ts", "deno run --allow-env src/main.ts"))
     negative("implicit-dotenv", "cli", lambda p: (p / "bunfig.toml").write_text("env = true\n"))
     negative("overwrite-results", "files", lambda p: replace(p / "src/main.ts", 'flag: "wx"', 'flag: "w"'))
     negative("dirent-property", "files", lambda p: replace(p / "src/main.ts", "entry.isFile()", "entry.isFile"))
+    negative("stripped-utf8-bom", "files", lambda p: replace(p / "src/main.ts", 'await readFile(path, "utf8")', 'new TextDecoder().decode(await readFile(path))'))
     negative("static-prefix-escape", "http", lambda p: replace(p / "src/server.ts", 'file.startsWith(root + "/")', "file.startsWith(root)"))
     negative("lost-test-assertions", "tests", lambda p: (p / "src/count_test.ts").write_text(
         'import {test} from "bun:test";for(let i=0;i<4;i++)test("empty"+i,()=>{});test.skip("expensive",()=>{});\n'))

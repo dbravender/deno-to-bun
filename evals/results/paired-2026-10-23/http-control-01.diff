@@ -1,0 +1,173 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,58 @@
++# Bun migration
++
++Requires Bun 1.4.4 (the supplied executable was used for validation).
++
++```sh
++bun install --frozen-lockfile
++bun run typecheck
++bun run check
++bun run serve /absolute/path/to/static/root
++```
++
++`serve` retains its root directory argument and listens only on `127.0.0.1`, on
++an automatically assigned port. It prints one JSON object containing `port` on
++stdout after binding. `check` remains available as an alias for the real strict
++TypeScript `typecheck` script. The original project had no run, test, or build
++tasks or external dependencies. TypeScript 7.0.2 and Bun types 1.4.4 are pinned
++new development dependencies; bun.lock pins their transitive dependencies.
++
++The health, POST echo, static-file, and fallback routes retain their status
++codes and bodies. Real-path resolution and the root-plus-separator containment
++check retain the existing treatment of symlinks and traversal. Missing files,
++directories, and malformed percent escapes return 404. An existing file resolved
++outside the root returns 403. The original resolve-then-read filesystem race
++remains; serve a trusted, stable directory.
++
++Bun infers different default content types than Deno. JSON and error responses
++therefore specify the original content types explicitly. Static files use a
++single-chunk byte stream, preserving binary
++bytes and the original absence of a content-type header.
++
++## Intentional runtime and security differences
++
++Deno's `--allow-read --allow-net=127.0.0.1` permissions have no equivalent in
++this Bun launch command. Bun runs with the operating system user's filesystem,
++network, environment, and process privileges. The explicit loopback bind and
++static-root containment remain, but they are not a runtime permission sandbox.
++Use operating-system isolation if the former Deno permission restrictions are
++required. No Deno executable or configuration is used by the migrated project.
++
++HTTP transport behavior (such as connection management, default request-size
++limits, timeout handling, transfer framing, and generated Date headers) is supplied by Bun rather
++than Deno. This migration retains Bun's transport defaults. Bun's default maximum
++request body is 128 MiB; larger echo requests may be rejected before the handler.
++Static responses can use chunked transfer encoding rather than Content-Length.
++Bun development error pages are disabled to avoid exposing source details on
++unhandled errors.
++
++## Validation
++
++Strict `bun run typecheck` and the retained `bun run check` pass. An independent
++local harness compared the original Deno server with `bun run serve` for 19
++requests, checking status, raw body, and content type. Cases
++covered health, UTF-8 and empty POST echo, wrong methods, fallback, text and
++binary and empty files, static POST, health HEAD, percent-encoded names, missing
++paths, malformed escapes and NUL,
++directories, internal and external symlinks, and encoded traversal into a
++sibling directory. Startup JSON and root-argument forwarding were also checked.
++No pre-existing tests or skipped assertions existed to port.
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,7 +0,0 @@
+-{
+-  "tasks": {
+-    "serve": "deno run --allow-read --allow-net=127.0.0.1 src/server.ts",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,14 @@
++{
++  "name": "bun-loopback-server",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "serve": "bun run src/server.ts",
++    "check": "bun run typecheck",
++    "typecheck": "tsc --noEmit"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4",
++    "typescript": "7.0.2"
++  }
++}
+--- original/src/server.ts
++++ candidate/src/server.ts
+@@ -1,25 +1,43 @@
+-const root = Deno.realPathSync(Deno.args[0]);
+-Deno.serve({
++import { realpathSync } from "node:fs";
++import { readFile } from "node:fs/promises";
++
++const root = realpathSync(Bun.argv[2]);
++function textResponse(body: string, status: number) {
++  return new Response(body, {
++    status,
++    headers: { "content-type": "text/plain;charset=UTF-8" },
++  });
++}
++
++const server = Bun.serve({
+   hostname: "127.0.0.1",
+   port: 0,
+-  onListen: ({ port }) => console.log(JSON.stringify({ port })),
+-}, async (request) => {
+-  const url = new URL(request.url);
+-  if (url.pathname === "/health") return Response.json({ ok: true });
+-  if (url.pathname === "/echo" && request.method === "POST") {
+-    return new Response(await request.text(), {
+-      status: 201,
+-      headers: { "content-type": "text/plain; charset=utf-8" },
+-    });
+-  }
+-  if (url.pathname.startsWith("/static/")) {
+-    try {
+-      const file = Deno.realPathSync(root + "/" + decodeURIComponent(url.pathname.slice(8)));
+-      if (!file.startsWith(root + "/")) return new Response("Forbidden", { status: 403 });
+-      return new Response(await Deno.readFile(file));
+-    } catch {
+-      return new Response("Not found", { status: 404 });
++  development: false,
++  async fetch(request) {
++    const url = new URL(request.url);
++    if (url.pathname === "/health") return Response.json({ ok: true }, { headers: { "content-type": "application/json" } });
++    if (url.pathname === "/echo" && request.method === "POST") {
++      return new Response(await request.text(), {
++        status: 201,
++        headers: { "content-type": "text/plain; charset=utf-8" },
++      });
+     }
+-  }
+-  return new Response("Not found", { status: 404 });
++    if (url.pathname.startsWith("/static/")) {
++      try {
++        const file = realpathSync(root + "/" + decodeURIComponent(url.pathname.slice(8)));
++        if (!file.startsWith(root + "/")) return textResponse("Forbidden", 403);
++        const bytes = await readFile(file);
++        return new Response(new ReadableStream({
++          start(controller) {
++            controller.enqueue(bytes);
++            controller.close();
++          },
++        }));
++      } catch {
++        return textResponse("Not found", 404);
++      }
++    }
++    return textResponse("Not found", 404);
++  },
+ });
++console.log(JSON.stringify({ port: server.port }));
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,11 @@
++{
++  "compilerOptions": {
++    "target": "ESNext",
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "strict": true,
++    "noEmit": true,
++    "types": ["bun"]
++  },
++  "include": ["src/**/*.ts"]
++}

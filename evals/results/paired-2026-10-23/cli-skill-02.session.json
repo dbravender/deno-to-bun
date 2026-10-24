@@ -1,0 +1,17 @@
+{
+  "start_epoch": 1792801770,
+  "end_epoch": 1792801887,
+  "seconds": 117,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "Deno baseline strict check passed",
+    "24 CLI output and exit-status comparisons passed",
+    "Dotenv non-loading verified across three launchers",
+    "Whole-source strict typecheck rejected unimported error probe",
+    "Clean frozen lock install, typecheck, make check passed with Deno absent from PATH",
+    "Shell launcher verified from outside project",
+    "No executable/configuration Deno consumers remain"
+  ],
+  "handoff": "Migrated CLI, aliases, package tasks, shell launcher, Makefile and pinned CI to Bun 1.4.4; generated bun.lock and documented permission changes. Hosted CI not run; original project has no tests/build/serve tasks."
+}

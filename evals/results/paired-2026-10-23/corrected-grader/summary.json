@@ -1,0 +1,74 @@
+{
+  "pairs": 7,
+  "automated_outcomes": {
+    "skill_only": 1,
+    "control_only": 1,
+    "both_pass": 5,
+    "both_fail": 0
+  },
+  "reviewed_pairs": 0,
+  "reviewed_outcomes": {
+    "skill_only": 0,
+    "control_only": 0,
+    "both_pass": 0,
+    "both_fail": 0
+  },
+  "by_case": {
+    "cli": {
+      "pairs": 2,
+      "skill_pass": 2,
+      "control_pass": 2
+    },
+    "files": {
+      "pairs": 2,
+      "skill_pass": 1,
+      "control_pass": 2
+    },
+    "http": {
+      "pairs": 1,
+      "skill_pass": 1,
+      "control_pass": 1
+    },
+    "tests": {
+      "pairs": 1,
+      "skill_pass": 1,
+      "control_pass": 0
+    },
+    "browser": {
+      "pairs": 1,
+      "skill_pass": 1,
+      "control_pass": 1
+    }
+  },
+  "metrics": {
+    "skill": {
+      "seconds": {
+        "reported": 7,
+        "median": 117
+      },
+      "cost_usd": {
+        "reported": 0,
+        "median": null
+      },
+      "manual_repairs": {
+        "reported": 7,
+        "median": 0
+      }
+    },
+    "control": {
+      "seconds": {
+        "reported": 7,
+        "median": 94
+      },
+      "cost_usd": {
+        "reported": 0,
+        "median": null
+      },
+      "manual_repairs": {
+        "reported": 7,
+        "median": 0
+      }
+    }
+  },
+  "warning": "Small samples, infrastructure differences, and public fixtures limit conclusions. No causal/significance claim is inferred."
+}

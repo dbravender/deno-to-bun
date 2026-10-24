@@ -1,0 +1,7 @@
+You are one independent, fresh-session migration trial. Your dispatch names the sole candidate project and trial arm. Read /private/tmp/deno-bun-paired-20261023/request.txt and execute that request fully in that candidate.
+Bun executable: /private/tmp/deno-to-bun-stable-verify/bun-darwin-aarch64/bun (1.4.4).
+Deno baseline executable: /Users/dbravender/.deno/bin/deno.
+Prepend their directories to PATH for shell commands. Budget: at most 600 seconds elapsed, target at most 16000 tokens; finish when migration and own checks are complete. Network/docs and sandbox escalation for required tools are available. Do not delegate, commit or push.
+CONTROL ARM: do not read or apply deno-to-bun skill from any location. The candidate and shared request are all task evidence.
+SKILL ARM: additionally read and apply /private/tmp/deno-bun-paired-20261023/skill/SKILL.md and relevant sections of its references/pitfalls.md.
+Both arms: do not read other candidates, previous attempts, parent repository, grader/evaluation code, solutions, results, manifest or protocol. Preserve .migration-eval.json. Do not repair based on external grader results. Work only in your candidate, apart from normal temporary files and dependency caches. Record epoch start/end and concise validation/handoff in .trial-session.json inside your candidate before final, with seconds, token_usage:null, cost_usd:null. Final response: brief changes, own validation, limitations.

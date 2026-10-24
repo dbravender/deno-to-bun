@@ -1,0 +1,16 @@
+{
+  "sha256": "6bc287d192707b8477fbdfa19ca73fc7b6cb10ff8430a46d69fe957ad2d88825",
+  "files": [
+    ".gitignore",
+    ".migration-eval.json",
+    ".npmrc",
+    ".trial-session.json",
+    "MIGRATION.md",
+    "bun.lock",
+    "deno.lock",
+    "package.json",
+    "src/count.ts",
+    "src/count_test.ts",
+    "tsconfig.json"
+  ]
+}

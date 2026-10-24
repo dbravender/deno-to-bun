@@ -1,0 +1,224 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,36 @@
++# Bun migration
++
++Requires Bun 1.4.4 or newer. Run `bun install --frozen-lockfile`, then
++`bun run typecheck` (or the preserved `bun run check` alias).
++Start with `bun run serve /absolute/path/to/static-root`; it binds to
++127.0.0.1 on a dynamically assigned port and prints `{ "port": number }` as JSON.
++Run the added HTTP regression suite with `bun run test`.
++There was no original test or build task, and no application dependencies.
++The exact development dependency @types/bun 1.4.4 supplies runtime declarations;
++Bun performs actual strict whole-project typechecking through `bun check --no-script`.
++
++The health, POST echo, fallback, binary static files and canonical-path containment
++behavior are preserved. Symlinks resolving outside the root and encoded traversal
++are forbidden. Missing files and malformed percent escapes remain 404 responses.
++Bun uses Node realpath/readFile and Bun.serve. The server disables Bun's default
++idle timeout and sets its request body ceiling to Number.MAX_SAFE_INTEGER to avoid
++introducing the default Bun timeout and 128 MiB body cap.
++
++Security difference: Bun does not enforce the old Deno `--allow-read` and
++`--allow-net=127.0.0.1` permission boundary. The listener still explicitly binds to
++loopback and application code still checks real paths, but arbitrary code in the
++process has the user's ambient filesystem/network privileges. Use an OS sandbox
++or isolated service account if a runtime permission boundary is required. Like the
++original, canonicalization followed by reading is not atomic against filesystem
++changes; serve trusted, non-writable static roots. Automatic dotenv loading is
++disabled in bunfig.toml to retain the original explicit environment behavior.
++
++Validation: original Deno strict check passed and 11 independent HTTP cases passed.
++The same cases passed through `bun run serve`; 11 retained Bun regression tests
++passed, with zero failures or skips. No original assertions or skips were removed.
++A fresh frozen-lockfile install, strict checking and tests were also verified with
++Deno absent from PATH. An invalid-source probe confirmed that typechecking fails
++on type errors; a harmless dotenv probe confirmed implicit loading is disabled.
++No formatting or lint replacement was attempted; neither
++had an original task. No deployment was performed. Header/parser behavior outside
++the covered routes and very large/long-lived requests were not exhaustively tested.
+--- original/bunfig.toml
++++ candidate/bunfig.toml
+@@ -0,0 +1 @@
++env = false
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,7 +0,0 @@
+-{
+-  "tasks": {
+-    "serve": "deno run --allow-read --allow-net=127.0.0.1 src/server.ts",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,16 @@
++{
++  "private": true,
++  "type": "module",
++  "engines": {
++    "bun": ">=1.4.4"
++  },
++  "scripts": {
++    "serve": "bun src/server.ts",
++    "check": "bun check --no-script",
++    "typecheck": "bun check --no-script",
++    "test": "bun test"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4"
++  }
++}
+--- original/src/server.ts
++++ candidate/src/server.ts
+@@ -1,25 +1,31 @@
+-const root = Deno.realPathSync(Deno.args[0]);
+-Deno.serve({
++import { realpathSync } from "node:fs";
++import { readFile } from "node:fs/promises";
++
++const root = realpathSync(Bun.argv[2]);
++const server = Bun.serve({
+   hostname: "127.0.0.1",
+   port: 0,
+-  onListen: ({ port }) => console.log(JSON.stringify({ port })),
+-}, async (request) => {
+-  const url = new URL(request.url);
+-  if (url.pathname === "/health") return Response.json({ ok: true });
+-  if (url.pathname === "/echo" && request.method === "POST") {
+-    return new Response(await request.text(), {
+-      status: 201,
+-      headers: { "content-type": "text/plain; charset=utf-8" },
+-    });
+-  }
+-  if (url.pathname.startsWith("/static/")) {
+-    try {
+-      const file = Deno.realPathSync(root + "/" + decodeURIComponent(url.pathname.slice(8)));
+-      if (!file.startsWith(root + "/")) return new Response("Forbidden", { status: 403 });
+-      return new Response(await Deno.readFile(file));
+-    } catch {
+-      return new Response("Not found", { status: 404 });
++  idleTimeout: 0,
++  maxRequestBodySize: Number.MAX_SAFE_INTEGER,
++  fetch: async (request) => {
++    const url = new URL(request.url);
++    if (url.pathname === "/health") return Response.json({ ok: true });
++    if (url.pathname === "/echo" && request.method === "POST") {
++      return new Response(await request.text(), {
++        status: 201,
++        headers: { "content-type": "text/plain; charset=utf-8" },
++      });
+     }
+-  }
+-  return new Response("Not found", { status: 404 });
++    if (url.pathname.startsWith("/static/")) {
++      try {
++        const file = realpathSync(root + "/" + decodeURIComponent(url.pathname.slice(8)));
++        if (!file.startsWith(root + "/")) return new Response("Forbidden", { status: 403 });
++        return new Response(await readFile(file));
++      } catch {
++        return new Response("Not found", { status: 404 });
++      }
++    }
++    return new Response("Not found", { status: 404 });
++  },
+ });
++console.log(JSON.stringify({ port: server.port }));
+--- original/tests/server.test.ts
++++ candidate/tests/server.test.ts
+@@ -0,0 +1,71 @@
++import { afterAll, beforeAll, expect, test } from "bun:test";
++import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++
++let directory: string;
++let server: ReturnType<typeof Bun.spawn>;
++let origin: string;
++const binary = Uint8Array.from({ length: 256 }, (_, i) => i);
++
++beforeAll(async () => {
++  directory = await mkdtemp(join(tmpdir(), "bun-http-"));
++  const root = join(directory, "public");
++  await mkdir(root);
++  await writeFile(join(root, "hello.txt"), "hello ☃");
++  await writeFile(join(root, "bytes.bin"), binary);
++  await writeFile(join(directory, "outside.txt"), "private");
++  await symlink(join(directory, "outside.txt"), join(root, "escape"));
++  server = Bun.spawn([process.execPath, "src/server.ts", root], {
++    cwd: join(import.meta.dir, ".."),
++    stdout: "pipe",
++    stderr: "inherit",
++  });
++  if (typeof server.stdout === "number" || !server.stdout) throw new Error("Missing server stdout");
++  const reader = server.stdout.getReader();
++  let output = "";
++  while (!output.includes("\n")) {
++    const { value, done } = await reader.read();
++    if (done) throw new Error("Server exited before reporting its port");
++    output += new TextDecoder().decode(value);
++  }
++  reader.releaseLock();
++  const { port } = JSON.parse(output.split("\n")[0]);
++  expect(port).toBeGreaterThan(0);
++  origin = `http://127.0.0.1:${port}`;
++});
++
++afterAll(async () => {
++  server?.kill();
++  if (server) await server.exited;
++  if (directory) await rm(directory, { recursive: true, force: true });
++});
++
++const cases: [string, string | undefined, number, string | Uint8Array<ArrayBuffer>][] = [
++  ["/health", undefined, 200, '{"ok":true}'],
++  ["/echo", "echo ☃", 201, "echo ☃"],
++  ["/echo", undefined, 404, "Not found"],
++  ["/unknown", undefined, 404, "Not found"],
++  ["/static/hello.txt", undefined, 200, "hello ☃"],
++  ["/static/bytes.bin", undefined, 200, binary],
++  ["/static/missing", undefined, 404, "Not found"],
++  ["/static/%ZZ", undefined, 404, "Not found"],
++  ["/static/%2e%2e%2foutside.txt", undefined, 403, "Forbidden"],
++  ["/static/escape", undefined, 403, "Forbidden"],
++  ["/static/", undefined, 403, "Forbidden"],
++];
++
++for (const [path, body, status, expected] of cases) {
++  test(`${body === undefined ? "GET" : "POST"} ${path}`, async () => {
++    const response = await fetch(origin + path, { method: body === undefined ? "GET" : "POST", body });
++    expect(response.status).toBe(status);
++    if (typeof expected === "string") {
++      expect(await response.text()).toBe(expected);
++    } else {
++      expect(new Uint8Array(await response.arrayBuffer())).toEqual(expected);
++    }
++    if (body !== undefined) {
++      expect(response.headers.get("content-type")).toBe("text/plain; charset=utf-8");
++    }
++  });
++}
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,16 @@
++{
++  "compilerOptions": {
++    "strict": true,
++    "target": "ESNext",
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "noEmit": true,
++    "types": [
++      "bun"
++    ]
++  },
++  "include": [
++    "src/**/*.ts",
++    "tests/**/*.ts"
++  ]
++}

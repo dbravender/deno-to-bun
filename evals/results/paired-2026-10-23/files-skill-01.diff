@@ -1,0 +1,280 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,70 @@
++# Bun migration
++
++Use Bun 1.4.4 or newer. This migration was verified with Bun 1.4.4 on macOS
++ARM64; the original baseline used Deno 2.9.7.
++
++```sh
++bun install --frozen-lockfile
++bun run typecheck
++bun run check
++bun run test
++bun run run new /tmp/example.txt 'héllo 🌎'
++bun run run read /tmp/example.txt
++```
++
++The `run` and `check` entry points replace the original Deno tasks. `typecheck`
++uses Bun's native checker with strict TypeScript settings and covers all source
++files, including `src/child.ts`, and the regression tests. `check` invokes the
++same checker. No serve or build tasks existed. Formatting and linting were not
++added or changed.
++
++There were no original external dependencies to preserve. The only new direct
++dependency is the development declaration package `@types/bun`, pinned to 1.4.4;
++its transitive declarations are recorded in the generated `bun.lock`. No runtime
++packages or trusted installation scripts are required. `deno.json` was removed.
++
++## Preserved behavior
++
++- `new` uses exclusive creation (`wx`) and never overwrites an existing file.
++- `replace` creates absent files and truncates existing content. Omitted text
++  remains an empty string. Reads and writes use UTF-8.
++- `missing` recognizes nonexistent paths by `ENOENT`, and propagates other
++  filesystem errors. Runtime-specific error names, messages, and stack traces
++  differ; failures still exit unsuccessfully.
++- `list` returns sorted regular filenames and excludes directories and symlinks.
++- `child` executes the adjacent TypeScript child with the current Bun executable,
++  converts its file URL to a filesystem path, ignores stdin, and drains both
++  output pipes concurrently. It returns JSON containing exit code 7 and the
++  complete stdout/stderr strings. The parent exits successfully as before.
++- `bunfig.toml` disables automatic dotenv loading, matching the original runtime.
++
++## Security and operational differences
++
++Bun has no equivalent to Deno's permission sandbox. The original launcher granted
++filesystem reads, writes, and subprocess execution, but withheld other permissions
++such as network and environment access. Bun runs with the user's normal OS
++privileges, including those additional capabilities. Use an OS sandbox or
++container if that boundary is required for untrusted execution. No permissions,
++services, or global tools were changed by this migration.
++
++## Verification
++
++The original strict Deno check and 12 filesystem/process baseline checks passed.
++There were no original tests or skips. Six Bun regression tests (18 assertions,
++zero failures/skips) now cover exclusive creation, Unicode reads, truncation,
++creation, omitted text, missing-file classification, directory errors, sorted
++listing, symlinks, unknown operations, and the large subprocess streams
++(120,001 bytes per stream) and exit status.
++
++A fresh disposable copy installed successfully using `bun install
++--frozen-lockfile --offline`, with no copied `node_modules`, using the downloaded
++package cache. Both strict check commands and the tests passed with Deno absent
++from PATH. Additional probes verified package-script argument forwarding with
++spaces and Unicode, that dotenv stays disabled through the outer script runner
++and inner runtime, and that an intentional type error in `src/child.ts` causes
++`typecheck` to fail. The probes and intentional error were confined to the
++disposable copy and removed afterward.
++
++Validation was local on macOS; other operating systems and hosted environments
++were not tested. There is no deployment or hosted CI configuration in this
++project.
+--- original/bunfig.toml
++++ candidate/bunfig.toml
+@@ -0,0 +1,2 @@
++# Match the original runtime: do not implicitly load dotenv files.
++env = false
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,7 +0,0 @@
+-{
+-  "tasks": {
+-    "run": "deno run --allow-read --allow-write --allow-run src/main.ts",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,18 @@
++{
++  "name": "files-cli",
++  "private": true,
++  "type": "module",
++  "packageManager": "bun@1.4.4",
++  "engines": {
++    "bun": ">=1.4.4"
++  },
++  "scripts": {
++    "run": "bun src/main.ts",
++    "check": "bun check --no-script",
++    "typecheck": "bun check --no-script",
++    "test": "bun test"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4"
++  }
++}
+--- original/src/child.ts
++++ candidate/src/child.ts
+@@ -1,3 +1,3 @@
+ console.log("out".repeat(40000));
+ console.error("err".repeat(40000));
+-Deno.exit(7);
++process.exit(7);
+--- original/src/main.ts
++++ candidate/src/main.ts
+@@ -1,41 +1,49 @@
+-const [operation, path, text = ""] = Deno.args;
++import { readFile, readdir, writeFile } from "node:fs/promises";
++import { fileURLToPath } from "node:url";
++
++const [operation, path, text = ""] = process.argv.slice(2);
+ switch (operation) {
+   case "new":
+-    await Deno.writeTextFile(path, text, { createNew: true });
++    await writeFile(path, text, { encoding: "utf8", flag: "wx" });
+     break;
+   case "replace":
+-    await Deno.writeTextFile(path, text);
++    await writeFile(path, text, "utf8");
+     break;
+   case "read":
+-    console.log(JSON.stringify(await Deno.readTextFile(path)));
++    console.log(JSON.stringify(await readFile(path, "utf8")));
+     break;
+   case "missing":
+     try {
+-      await Deno.readTextFile(path);
++      await readFile(path, "utf8");
+       console.log(JSON.stringify({ missing: false }));
+     } catch (error) {
+-      if (!(error instanceof Deno.errors.NotFound)) throw error;
++      if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
+       console.log(JSON.stringify({ missing: true }));
+     }
+     break;
+   case "list": {
+     const files = [];
+-    for await (const entry of Deno.readDir(path)) {
+-      if (entry.isFile) files.push(entry.name);
++    for (const entry of await readdir(path, { withFileTypes: true })) {
++      if (entry.isFile()) files.push(entry.name);
+     }
+     console.log(JSON.stringify(files.sort()));
+     break;
+   }
+   case "child": {
+-    const output = await new Deno.Command(Deno.execPath(), {
+-      args: ["run", new URL("./child.ts", import.meta.url).href],
+-      stdout: "piped",
+-      stderr: "piped",
+-    }).output();
++    const child = Bun.spawn([process.execPath, fileURLToPath(new URL("./child.ts", import.meta.url))], {
++      stdin: "ignore",
++      stdout: "pipe",
++      stderr: "pipe",
++    });
++    const [code, stdout, stderr] = await Promise.all([
++      child.exited,
++      new Response(child.stdout).text(),
++      new Response(child.stderr).text(),
++    ]);
+     console.log(JSON.stringify({
+-      code: output.code,
+-      stdout: new TextDecoder().decode(output.stdout),
+-      stderr: new TextDecoder().decode(output.stderr),
++      code,
++      stdout,
++      stderr,
+     }));
+     break;
+   }
+--- original/tests/files.test.ts
++++ candidate/tests/files.test.ts
+@@ -0,0 +1,74 @@
++import { afterEach, expect, test } from "bun:test";
++import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { fileURLToPath } from "node:url";
++
++const main = fileURLToPath(new URL("../src/main.ts", import.meta.url));
++const directories: string[] = [];
++async function fixture() {
++  const directory = await mkdtemp(join(tmpdir(), "files-cli-"));
++  directories.push(directory);
++  return directory;
++}
++afterEach(async () => {
++  await Promise.all(directories.splice(0).map((directory) => rm(directory, { recursive: true, force: true })));
++});
++async function run(...args: string[]) {
++  const child = Bun.spawn([process.execPath, main, ...args], {
++    stdin: "ignore", stdout: "pipe", stderr: "pipe",
++  });
++  const [code, stdout, stderr] = await Promise.all([
++    child.exited, new Response(child.stdout).text(), new Response(child.stderr).text(),
++  ]);
++  return { code, stdout, stderr };
++}
++
++test("exclusive creation preserves existing content and UTF-8 reads", async () => {
++  const path = join(await fixture(), "unicode.txt");
++  expect((await run("new", path, "héllo 🌎")).code).toBe(0);
++  expect((await run("new", path, "must not overwrite")).code).not.toBe(0);
++  expect(await readFile(path, "utf8")).toBe("héllo 🌎");
++  expect(await run("read", path)).toEqual({ code: 0, stdout: '"héllo 🌎"\n', stderr: "" });
++});
++
++test("replace truncates and creates absent files; omitted text is empty", async () => {
++  const path = join(await fixture(), "replace.txt");
++  expect((await run("replace", path, "a longer string")).code).toBe(0);
++  expect((await run("replace", path, "短")).code).toBe(0);
++  expect(await readFile(path, "utf8")).toBe("短");
++  expect((await run("replace", path)).code).toBe(0);
++  expect(await readFile(path, "utf8")).toBe("");
++});
++
++test("missing recognizes only nonexistent paths and preserves other errors", async () => {
++  const directory = await fixture();
++  const path = join(directory, "present");
++  await writeFile(path, "");
++  expect(JSON.parse((await run("missing", path)).stdout)).toEqual({ missing: false });
++  expect(JSON.parse((await run("missing", join(directory, "absent"))).stdout)).toEqual({ missing: true });
++  expect((await run("missing", directory)).code).not.toBe(0);
++  expect((await run("read", join(directory, "absent"))).code).not.toBe(0);
++});
++
++test("listing sorts regular files and excludes directories and symlinks", async () => {
++  const directory = await fixture();
++  await writeFile(join(directory, "z"), "");
++  await writeFile(join(directory, "a"), "");
++  await mkdir(join(directory, "directory"));
++  await symlink(join(directory, "a"), join(directory, "link"));
++  expect(JSON.parse((await run("list", directory)).stdout)).toEqual(["a", "z"]);
++});
++
++test("child captures both complete large streams and nonzero exit status", async () => {
++  const result = await run("child");
++  expect(result.code).toBe(0);
++  expect(result.stderr).toBe("");
++  expect(JSON.parse(result.stdout)).toEqual({
++    code: 7, stdout: "out".repeat(40000) + "\n", stderr: "err".repeat(40000) + "\n",
++  });
++}, 10000);
++
++test("unknown operation fails", async () => {
++  expect((await run("unknown")).code).not.toBe(0);
++});
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,12 @@
++{
++  "compilerOptions": {
++    "strict": true,
++    "noEmit": true,
++    "target": "ESNext",
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "types": ["bun"],
++    "lib": ["ESNext", "DOM"]
++  },
++  "include": ["src/**/*.ts", "tests/**/*.ts"]
++}

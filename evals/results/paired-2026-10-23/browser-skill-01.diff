@@ -1,0 +1,113 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,36 @@
++# Bun migration
++
++Requires Bun 1.4.4 (the version used for validation). Install with
++`bun install --frozen-lockfile`, then run `bun run typecheck` (or the preserved
++`bun run check` entry point) and `bun run build`.
++
++Preact remains pinned to 10.29.0. Strict checking, automatic Preact JSX, browser
++DOM/ESNext declarations, and the `@lib/` source alias live in tsconfig.json.
++Bun's native checker covers every TypeScript/TSX file under src, including files
++not imported by the main entry point. No TypeScript runtime execution substitutes
++for checking. The unused Deno namespace declarations and Deno configuration have
++been removed.
++
++The build still bundles src/main.tsx for browsers as an IIFE at public/app.js,
++which public/index.html loads as a classic script. Source and HTML asset bytes
++are unchanged. Bun generates different bundle text and size; byte-for-byte
++bundle equivalence is not expected. No new framework or server was added.
++There were no run, serve, test, formatter, or linter tasks in the original project;
++formatter/linter replacement is outside this migration's scope.
++
++Bun tool processes do not reproduce Deno's permission sandbox and run with the
++invoking user's OS permissions. The application remains browser code governed by
++browser security. bunfig.toml disables implicit dotenv loading to preserve the
++original tools' environment handling. Dependency lifecycle scripts were not
++broadly trusted or enabled.
++
++Validation: the original Deno check/build passed. Bun typecheck, check, and build
++passed both in this project and in a clean disposable copy after installation
++from the frozen lockfile, with Deno absent from PATH. A temporary, unimported
++source file with an invalid assignment was rejected by typecheck and then
++removed. Both baseline and Bun bundles produced `Hello Ada` in a DOM-shaped VM
++context and threw `missing app element` when that element was absent. SHA-256
++hashes of public/index.html and public/legal.html match their baseline values.
++There were no existing tests or skips to port. A real browser session, hosted CI,
++and deployment were not exercised; the VM smoke check does not validate all
++browser integration behavior.
+--- original/bunfig.toml
++++ candidate/bunfig.toml
+@@ -0,0 +1 @@
++env = false
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,17 +0,0 @@
+-{
+-  "imports": {
+-    "preact": "npm:preact@10.29.0",
+-    "preact/jsx-runtime": "npm:preact@10.29.0/jsx-runtime",
+-    "@lib/": "./src/lib/"
+-  },
+-  "tasks": {
+-    "build": "deno bundle --platform=browser --format=iife src/main.tsx -o public/app.js",
+-    "check": "deno check src/**/*.ts src/**/*.tsx"
+-  },
+-  "compilerOptions": {
+-    "strict": true,
+-    "jsx": "react-jsx",
+-    "jsxImportSource": "preact",
+-    "lib": ["dom", "esnext", "deno.ns"]
+-  }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,14 @@
++{
++  "name": "browser-app",
++  "private": true,
++  "type": "module",
++  "packageManager": "bun@1.4.4",
++  "scripts": {
++    "build": "bun build --target=browser --format=iife src/main.tsx --outfile=public/app.js",
++    "check": "bun check --no-script",
++    "typecheck": "bun check --no-script"
++  },
++  "dependencies": {
++    "preact": "10.29.0"
++  }
++}
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,26 @@
++{
++  "compilerOptions": {
++    "strict": true,
++    "jsx": "react-jsx",
++    "jsxImportSource": "preact",
++    "lib": [
++      "DOM",
++      "ESNext"
++    ],
++    "target": "ESNext",
++    "module": "ESNext",
++    "moduleResolution": "Bundler",
++    "allowImportingTsExtensions": true,
++    "noEmit": true,
++    "types": [],
++    "paths": {
++      "@lib/*": [
++        "./src/lib/*"
++      ]
++    }
++  },
++  "include": [
++    "src/**/*.ts",
++    "src/**/*.tsx"
++  ]
++}

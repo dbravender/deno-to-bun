@@ -1,0 +1,16 @@
+{
+  "start_epoch": 1792801356,
+  "end_epoch": 1792801462,
+  "seconds": 106,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "Original Deno strict check passed",
+    "39 Bun CLI/launcher/environment behavior checks passed",
+    "Bun whole-project strict check and make check passed with Deno absent from PATH",
+    "Unimported type-error probe was rejected",
+    "Fresh copy frozen install, typecheck, make check and CLI smoke passed",
+    "Protected .migration-eval.json hash unchanged"
+  ],
+  "handoff": "Migrated CLI, shell launcher, Makefile and CI to Bun 1.4.4; generated bun.lock; documented permission differences in MIGRATION.md. No existing test/build/serve tasks. Remote CI unverified. No commit or push."
+}

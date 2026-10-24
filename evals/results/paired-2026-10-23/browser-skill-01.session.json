@@ -1,0 +1,9 @@
+{
+  "start_epoch": 1792801705,
+  "end_epoch": 1792801789,
+  "seconds": 84,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": "Baseline Deno check/build passed. Bun frozen-lockfile install in clean copy, whole-project typecheck/check and browser IIFE build passed with Deno absent from PATH. Unimported invalid source rejected. Baseline/new bundle VM greeting and missing-element behavior match. HTML SHA-256 hashes unchanged.",
+  "handoff": "Bun 1.4.4; preact 10.29.0; native strict typecheck, preserved check/build scripts, bun.lock, Deno config removed, MIGRATION.md documents security and output differences. No existing tests; no real browser, deployment, or hosted CI validation."
+}

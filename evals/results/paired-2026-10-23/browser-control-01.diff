@@ -1,0 +1,422 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1,2 @@
++node_modules/
++public/app.js
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,22 @@
++# Bun migration
++
++Validated with Bun 1.4.4. Install with `bun install --frozen-lockfile`, then
++run `bun run typecheck` (or the preserved `bun run check` entry point) and
++`bun run build`. Open `public/index.html` after building.
++
++The build still bundles `src/main.tsx` for browsers as an IIFE at
++`public/app.js`. Preact remains pinned to 10.29.0; its automatic JSX runtime
++comes from the same package. TypeScript paths preserve the `@lib/` alias.
++The public HTML files and application source are unchanged.
++
++Strict checking now uses the pinned TypeScript compiler with browser libraries,
++instead of `deno check`; Deno globals are intentionally unavailable. Bundling
++uses Bun, so generated JavaScript and its size can differ while the visible
++`Hello Ada` result and missing-element error remain unchanged. No run, serve,
++or test tasks existed in the original project.
++
++Bun has no Deno permission sandbox. These commands only check and bundle the
++browser application, but tooling executes with the invoking user's permissions.
++Bun's environment/configuration loading and bundler resolution can differ from
++Deno's; the build does not explicitly enable environment-variable inlining.
++No formatter or linter replacement is included.
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,17 +0,0 @@
+-{
+-  "imports": {
+-    "preact": "npm:preact@10.29.0",
+-    "preact/jsx-runtime": "npm:preact@10.29.0/jsx-runtime",
+-    "@lib/": "./src/lib/"
+-  },
+-  "tasks": {
+-    "build": "deno bundle --platform=browser --format=iife src/main.tsx -o public/app.js",
+-    "check": "deno check src/**/*.ts src/**/*.tsx"
+-  },
+-  "compilerOptions": {
+-    "strict": true,
+-    "jsx": "react-jsx",
+-    "jsxImportSource": "preact",
+-    "lib": ["dom", "esnext", "deno.ns"]
+-  }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,16 @@
++{
++  "name": "browser-bundle",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "build": "bun build --target=browser --format=iife src/main.tsx --outfile=public/app.js",
++    "typecheck": "tsc --noEmit",
++    "check": "bun run typecheck"
++  },
++  "dependencies": {
++    "preact": "10.29.0"
++  },
++  "devDependencies": {
++    "typescript": "5.9.3"
++  }
++}
+--- original/public/app.js
++++ candidate/public/app.js
+@@ -0,0 +1,329 @@
++(() => {
++  // src/lib/name.ts
++  var name = "Ada";
++
++  // node_modules/preact/dist/preact.module.js
++  var n;
++  var l;
++  var u;
++  var t;
++  var i;
++  var r;
++  var o;
++  var e;
++  var f;
++  var c;
++  var s;
++  var a;
++  var h;
++  var p = {};
++  var v = [];
++  var y = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
++  var d = Array.isArray;
++  function w(n, l) {
++    for (var u in l)
++      n[u] = l[u];
++    return n;
++  }
++  function g(n) {
++    n && n.parentNode && n.parentNode.removeChild(n);
++  }
++  function m(n, t, i, r, o) {
++    var e = { type: n, props: t, key: i, ref: r, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: undefined, __v: o == null ? ++u : o, __i: -1, __u: 0 };
++    return o == null && l.vnode != null && l.vnode(e), e;
++  }
++  function k(n) {
++    return n.children;
++  }
++  function x(n, l) {
++    this.props = n, this.context = l;
++  }
++  function S(n, l) {
++    if (l == null)
++      return n.__ ? S(n.__, n.__i + 1) : null;
++    for (var u;l < n.__k.length; l++)
++      if ((u = n.__k[l]) != null && u.__e != null)
++        return u.__e;
++    return typeof n.type == "function" ? S(n) : null;
++  }
++  function C(n) {
++    if (n.__P && n.__d) {
++      var u = n.__v, t = u.__e, i = [], r = [], o = w({}, u);
++      o.__v = u.__v + 1, l.vnode && l.vnode(o), z(n.__P, o, u, n.__n, n.__P.namespaceURI, 32 & u.__u ? [t] : null, i, t == null ? S(u) : t, !!(32 & u.__u), r), o.__v = u.__v, o.__.__k[o.__i] = o, V(i, o, r), u.__e = u.__ = null, o.__e != t && M(o);
++    }
++  }
++  function M(n) {
++    if ((n = n.__) != null && n.__c != null)
++      return n.__e = n.__c.base = null, n.__k.some(function(l) {
++        if (l != null && l.__e != null)
++          return n.__e = n.__c.base = l.__e;
++      }), M(n);
++  }
++  function $(n) {
++    (!n.__d && (n.__d = true) && i.push(n) && !I.__r++ || r != l.debounceRendering) && ((r = l.debounceRendering) || o)(I);
++  }
++  function I() {
++    try {
++      for (var n, l = 1;i.length; )
++        i.length > l && i.sort(e), n = i.shift(), l = i.length, C(n);
++    } finally {
++      i.length = I.__r = 0;
++    }
++  }
++  function P(n, l, u, t, i, r, o, e, f, c, s) {
++    var a, h, y, d, w, g, _, m = t && t.__k || v, b = l.length;
++    for (f = A(u, l, m, f, b), a = 0;a < b; a++)
++      (y = u.__k[a]) != null && (h = y.__i != -1 && m[y.__i] || p, y.__i = a, g = z(n, y, h, i, r, o, e, f, c, s), d = y.__e, y.ref && h.ref != y.ref && (h.ref && D(h.ref, null, y), s.push(y.ref, y.__c || d, y)), w == null && d != null && (w = d), (_ = !!(4 & y.__u)) || h.__k === y.__k ? f = H(y, f, n, _) : typeof y.type == "function" && g !== undefined ? f = g : d && (f = d.nextSibling), y.__u &= -7);
++    return u.__e = w, f;
++  }
++  function A(n, l, u, t, i) {
++    var r, o, e, f, c, s = u.length, a = s, h = 0;
++    for (n.__k = new Array(i), r = 0;r < i; r++)
++      (o = l[r]) != null && typeof o != "boolean" && typeof o != "function" ? (typeof o == "string" || typeof o == "number" || typeof o == "bigint" || o.constructor == String ? o = n.__k[r] = m(null, o, null, null, null) : d(o) ? o = n.__k[r] = m(k, { children: o }, null, null, null) : o.constructor === undefined && o.__b > 0 ? o = n.__k[r] = m(o.type, o.props, o.key, o.ref ? o.ref : null, o.__v) : n.__k[r] = o, f = r + h, o.__ = n, o.__b = n.__b + 1, e = null, (c = o.__i = T(o, u, f, a)) != -1 && (a--, (e = u[c]) && (e.__u |= 2)), e == null || e.__v == null ? (c == -1 && (i > s ? h-- : i < s && h++), typeof o.type != "function" && (o.__u |= 4)) : c != f && (c == f - 1 ? h-- : c == f + 1 ? h++ : (c > f ? h-- : h++, o.__u |= 4))) : n.__k[r] = null;
++    if (a)
++      for (r = 0;r < s; r++)
++        (e = u[r]) != null && (2 & e.__u) == 0 && (e.__e == t && (t = S(e)), E(e, e));
++    return t;
++  }
++  function H(n, l, u, t) {
++    var i, r;
++    if (typeof n.type == "function") {
++      for (i = n.__k, r = 0;i && r < i.length; r++)
++        i[r] && (i[r].__ = n, l = H(i[r], l, u, t));
++      return l;
++    }
++    n.__e != l && (t && (l && n.type && !l.parentNode && (l = S(n)), u.insertBefore(n.__e, l || null)), l = n.__e);
++    do {
++      l = l && l.nextSibling;
++    } while (l != null && l.nodeType == 8);
++    return l;
++  }
++  function T(n, l, u, t) {
++    var i, r, o, { key: e, type: f } = n, c = l[u], s = c != null && (2 & c.__u) == 0;
++    if (c === null && e == null || s && e == c.key && f == c.type)
++      return u;
++    if (t > (s ? 1 : 0)) {
++      for (i = u - 1, r = u + 1;i >= 0 || r < l.length; )
++        if ((c = l[o = i >= 0 ? i-- : r++]) != null && (2 & c.__u) == 0 && e == c.key && f == c.type)
++          return o;
++    }
++    return -1;
++  }
++  function j(n, l, u) {
++    l[0] == "-" ? n.setProperty(l, u == null ? "" : u) : n[l] = u == null ? "" : typeof u != "number" || y.test(l) ? u : u + "px";
++  }
++  function F(n, l, u, t, i) {
++    var r, o;
++    n:
++      if (l == "style")
++        if (typeof u == "string")
++          n.style.cssText = u;
++        else {
++          if (typeof t == "string" && (n.style.cssText = t = ""), t)
++            for (l in t)
++              u && l in u || j(n.style, l, "");
++          if (u)
++            for (l in u)
++              t && u[l] == t[l] || j(n.style, l, u[l]);
++        }
++      else if (l[0] == "o" && l[1] == "n")
++        r = l != (l = l.replace(f, "$1")), o = l.toLowerCase(), l = o in n || l == "onFocusOut" || l == "onFocusIn" ? o.slice(2) : l.slice(2), n.l || (n.l = {}), n.l[l + r] = u, u ? t ? u.u = t.u : (u.u = c, n.addEventListener(l, r ? a : s, r)) : n.removeEventListener(l, r ? a : s, r);
++      else {
++        if (i == "http://www.w3.org/2000/svg")
++          l = l.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
++        else if (l != "width" && l != "height" && l != "href" && l != "list" && l != "form" && l != "tabIndex" && l != "download" && l != "rowSpan" && l != "colSpan" && l != "role" && l != "popover" && l in n)
++          try {
++            n[l] = u == null ? "" : u;
++            break n;
++          } catch (n) {}
++        typeof u == "function" || (u == null || u === false && l[4] != "-" ? n.removeAttribute(l) : n.setAttribute(l, l == "popover" && u == 1 ? "" : u));
++      }
++  }
++  function O(n) {
++    return function(u) {
++      if (this.l) {
++        var t = this.l[u.type + n];
++        if (u.t == null)
++          u.t = c++;
++        else if (u.t < t.u)
++          return;
++        return t(l.event ? l.event(u) : u);
++      }
++    };
++  }
++  function z(n, u, t, i, r, o, e, f, c, s) {
++    var a, h, p, y, _, m, b, S, C, M, $, I, A, H, L, T = u.type;
++    if (u.constructor !== undefined)
++      return null;
++    128 & t.__u && (c = !!(32 & t.__u), o = [f = u.__e = t.__e]), (a = l.__b) && a(u);
++    n:
++      if (typeof T == "function")
++        try {
++          if (S = u.props, C = T.prototype && T.prototype.render, M = (a = T.contextType) && i[a.__c], $ = a ? M ? M.props.value : a.__ : i, t.__c ? b = (h = u.__c = t.__c).__ = h.__E : (C ? u.__c = h = new T(S, $) : (u.__c = h = new x(S, $), h.constructor = T, h.render = G), M && M.sub(h), h.state || (h.state = {}), h.__n = i, p = h.__d = true, h.__h = [], h._sb = []), C && h.__s == null && (h.__s = h.state), C && T.getDerivedStateFromProps != null && (h.__s == h.state && (h.__s = w({}, h.__s)), w(h.__s, T.getDerivedStateFromProps(S, h.__s))), y = h.props, _ = h.state, h.__v = u, p)
++            C && T.getDerivedStateFromProps == null && h.componentWillMount != null && h.componentWillMount(), C && h.componentDidMount != null && h.__h.push(h.componentDidMount);
++          else {
++            if (C && T.getDerivedStateFromProps == null && S !== y && h.componentWillReceiveProps != null && h.componentWillReceiveProps(S, $), u.__v == t.__v || !h.__e && h.shouldComponentUpdate != null && h.shouldComponentUpdate(S, h.__s, $) === false) {
++              u.__v != t.__v && (h.props = S, h.state = h.__s, h.__d = false), u.__e = t.__e, u.__k = t.__k, u.__k.some(function(n) {
++                n && (n.__ = u);
++              }), v.push.apply(h.__h, h._sb), h._sb = [], h.__h.length && e.push(h);
++              break n;
++            }
++            h.componentWillUpdate != null && h.componentWillUpdate(S, h.__s, $), C && h.componentDidUpdate != null && h.__h.push(function() {
++              h.componentDidUpdate(y, _, m);
++            });
++          }
++          if (h.context = $, h.props = S, h.__P = n, h.__e = false, I = l.__r, A = 0, C)
++            h.state = h.__s, h.__d = false, I && I(u), a = h.render(h.props, h.state, h.context), v.push.apply(h.__h, h._sb), h._sb = [];
++          else
++            do {
++              h.__d = false, I && I(u), a = h.render(h.props, h.state, h.context), h.state = h.__s;
++            } while (h.__d && ++A < 25);
++          h.state = h.__s, h.getChildContext != null && (i = w(w({}, i), h.getChildContext())), C && !p && h.getSnapshotBeforeUpdate != null && (m = h.getSnapshotBeforeUpdate(y, _)), H = a != null && a.type === k && a.key == null ? q(a.props.children) : a, f = P(n, d(H) ? H : [H], u, t, i, r, o, e, f, c, s), h.base = u.__e, u.__u &= -161, h.__h.length && e.push(h), b && (h.__E = h.__ = null);
++        } catch (n) {
++          if (u.__v = null, c || o != null)
++            if (n.then) {
++              for (u.__u |= c ? 160 : 128;f && f.nodeType == 8 && f.nextSibling; )
++                f = f.nextSibling;
++              o[o.indexOf(f)] = null, u.__e = f;
++            } else {
++              for (L = o.length;L--; )
++                g(o[L]);
++              N(u);
++            }
++          else
++            u.__e = t.__e, u.__k = t.__k, n.then || N(u);
++          l.__e(n, u, t);
++        }
++      else
++        o == null && u.__v == t.__v ? (u.__k = t.__k, u.__e = t.__e) : f = u.__e = B(t.__e, u, t, i, r, o, e, c, s);
++    return (a = l.diffed) && a(u), 128 & u.__u ? undefined : f;
++  }
++  function N(n) {
++    n && (n.__c && (n.__c.__e = true), n.__k && n.__k.some(N));
++  }
++  function V(n, u, t) {
++    for (var i = 0;i < t.length; i++)
++      D(t[i], t[++i], t[++i]);
++    l.__c && l.__c(u, n), n.some(function(u) {
++      try {
++        n = u.__h, u.__h = [], n.some(function(n) {
++          n.call(u);
++        });
++      } catch (n) {
++        l.__e(n, u.__v);
++      }
++    });
++  }
++  function q(n) {
++    return typeof n != "object" || n == null || n.__b > 0 ? n : d(n) ? n.map(q) : w({}, n);
++  }
++  function B(u, t, i, r, o, e, f, c, s) {
++    var a, h, v, y, w, _, m, b = i.props || p, { props: k, type: x } = t;
++    if (x == "svg" ? o = "http://www.w3.org/2000/svg" : x == "math" ? o = "http://www.w3.org/1998/Math/MathML" : o || (o = "http://www.w3.org/1999/xhtml"), e != null) {
++      for (a = 0;a < e.length; a++)
++        if ((w = e[a]) && "setAttribute" in w == !!x && (x ? w.localName == x : w.nodeType == 3)) {
++          u = w, e[a] = null;
++          break;
++        }
++    }
++    if (u == null) {
++      if (x == null)
++        return document.createTextNode(k);
++      u = document.createElementNS(o, x, k.is && k), c && (l.__m && l.__m(t, e), c = false), e = null;
++    }
++    if (x == null)
++      b === k || c && u.data == k || (u.data = k);
++    else {
++      if (e = e && n.call(u.childNodes), !c && e != null)
++        for (b = {}, a = 0;a < u.attributes.length; a++)
++          b[(w = u.attributes[a]).name] = w.value;
++      for (a in b)
++        w = b[a], a == "dangerouslySetInnerHTML" ? v = w : a == "children" || (a in k) || a == "value" && ("defaultValue" in k) || a == "checked" && ("defaultChecked" in k) || F(u, a, null, w, o);
++      for (a in k)
++        w = k[a], a == "children" ? y = w : a == "dangerouslySetInnerHTML" ? h = w : a == "value" ? _ = w : a == "checked" ? m = w : c && typeof w != "function" || b[a] === w || F(u, a, w, b[a], o);
++      if (h)
++        c || v && (h.__html == v.__html || h.__html == u.innerHTML) || (u.innerHTML = h.__html), t.__k = [];
++      else if (v && (u.innerHTML = ""), P(t.type == "template" ? u.content : u, d(y) ? y : [y], t, i, r, x == "foreignObject" ? "http://www.w3.org/1999/xhtml" : o, e, f, e ? e[0] : i.__k && S(i, 0), c, s), e != null)
++        for (a = e.length;a--; )
++          g(e[a]);
++      c || (a = "value", x == "progress" && _ == null ? u.removeAttribute("value") : _ != null && (_ !== u[a] || x == "progress" && !_ || x == "option" && _ != b[a]) && F(u, a, _, b[a], o), a = "checked", m != null && m != u[a] && F(u, a, m, b[a], o));
++    }
++    return u;
++  }
++  function D(n, u, t) {
++    try {
++      if (typeof n == "function") {
++        var i = typeof n.__u == "function";
++        i && n.__u(), i && u == null || (n.__u = n(u));
++      } else
++        n.current = u;
++    } catch (n) {
++      l.__e(n, t);
++    }
++  }
++  function E(n, u, t) {
++    var i, r;
++    if (l.unmount && l.unmount(n), (i = n.ref) && (i.current && i.current != n.__e || D(i, null, u)), (i = n.__c) != null) {
++      if (i.componentWillUnmount)
++        try {
++          i.componentWillUnmount();
++        } catch (n) {
++          l.__e(n, u);
++        }
++      i.base = i.__P = null;
++    }
++    if (i = n.__k)
++      for (r = 0;r < i.length; r++)
++        i[r] && E(i[r], u, t || typeof n.type != "function");
++    t || g(n.__e), n.__c = n.__ = n.__e = undefined;
++  }
++  function G(n, l, u) {
++    return this.constructor(n, u);
++  }
++  n = v.slice, l = { __e: function(n, l, u, t) {
++    for (var i, r, o;l = l.__; )
++      if ((i = l.__c) && !i.__)
++        try {
++          if ((r = i.constructor) && r.getDerivedStateFromError != null && (i.setState(r.getDerivedStateFromError(n)), o = i.__d), i.componentDidCatch != null && (i.componentDidCatch(n, t || {}), o = i.__d), o)
++            return i.__E = i;
++        } catch (l) {
++          n = l;
++        }
++    throw n;
++  } }, u = 0, t = function(n) {
++    return n != null && n.constructor === undefined;
++  }, x.prototype.setState = function(n, l) {
++    var u;
++    u = this.__s != null && this.__s != this.state ? this.__s : this.__s = w({}, this.state), typeof n == "function" && (n = n(w({}, u), this.props)), n && w(u, n), n != null && this.__v && (l && this._sb.push(l), $(this));
++  }, x.prototype.forceUpdate = function(n) {
++    this.__v && (this.__e = true, n && this.__h.push(n), $(this));
++  }, x.prototype.render = k, i = [], o = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, e = function(n, l) {
++    return n.__v.__b - l.__v.__b;
++  }, I.__r = 0, f = /(PointerCapture)$|Capture$/i, c = 0, s = O(false), a = O(true), h = 0;
++  // node_modules/preact/jsx-runtime/dist/jsxRuntime.module.js
++  var f2 = 0;
++  function u2(e, t, n, o, i, u) {
++    t || (t = {});
++    var a, c, p = t;
++    if ("ref" in p)
++      for (c in p = {}, t)
++        c == "ref" ? a = t[c] : p[c] = t[c];
++    var l2 = { type: e, props: p, key: n, ref: a, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: undefined, __v: --f2, __i: -1, __u: 0, __source: i, __self: u };
++    if (typeof e == "function" && (a = e.defaultProps))
++      for (c in a)
++        p[c] === undefined && (p[c] = a[c]);
++    return l.vnode && l.vnode(l2), l2;
++  }
++
++  // src/main.tsx
++  var node = /* @__PURE__ */ u2("span", {
++    children: [
++      "Hello ",
++      name
++    ]
++  });
++  var element = document.getElementById("app");
++  if (!element)
++    throw new Error("missing app element");
++  element.textContent = [node.props.children].flat().join("");
++})();
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,18 @@
++{
++  "compilerOptions": {
++    "target": "ESNext",
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "strict": true,
++    "noEmit": true,
++    "allowImportingTsExtensions": true,
++    "jsx": "react-jsx",
++    "jsxImportSource": "preact",
++    "lib": ["DOM", "ESNext"],
++    "types": [],
++    "paths": {
++      "@lib/*": ["./src/lib/*"]
++    }
++  },
++  "include": ["src/**/*.ts", "src/**/*.tsx"]
++}

@@ -1,0 +1,15 @@
+{
+  "sha256": "c6706059b2b752dc8aee7977d326f36093bfdd23cdcb3ca17d6b88d4b34d22e6",
+  "files": [
+    ".gitignore",
+    ".migration-eval.json",
+    ".trial-session.json",
+    "MIGRATION.md",
+    "bun.lock",
+    "package.json",
+    "src/child.ts",
+    "src/main.ts",
+    "tests/files.test.ts",
+    "tsconfig.json"
+  ]
+}

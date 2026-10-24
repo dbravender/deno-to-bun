@@ -41,6 +41,10 @@
 - Preserve UTF-8 decoding, truncation/append behavior, exclusive creation (`wx`),
   atomic rename, and awaited file-handle closure. `Bun.write` is not a universal
   substitute for option-bearing Deno writes.
+- Compare text reads with bytes containing a UTF-8 BOM and malformed sequences.
+  Deno 2.9.7 `readTextFile` preserves the BOM; Node `readFile(path, "utf8")`
+  matches that behavior. Default `TextDecoder` strips it. Do not change decoding
+  based on an assumed equivalence; check the project's actual runtime baseline.
 - Node Dirent has `isFile()`; Deno directory entries have boolean properties.
   Recognize `ENOENT` without swallowing permission or other I/O errors.
 - Preserve subprocess arguments, stdin, stdout/stderr, exit codes, cancellation,

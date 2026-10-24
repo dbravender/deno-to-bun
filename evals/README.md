@@ -56,6 +56,12 @@ A passing self-test shows that the evaluator accepts known-good examples and
 rejects these known failures. **It does not measure the migration skill's effect.**
 Reference implementations are not agent attempts and are never counted as such.
 
+The self-test also accepts a CI `check` alias that invokes real typechecking and
+rejects a CI alias that only prints success. Workflow inspection supports literal
+`bun run <task>` steps and probes the invoked task with type errors; it does not
+execute GitHub Actions. File behavior includes BOM preservation and malformed
+UTF-8 replacement, with a negative control for accidental BOM stripping.
+
 ## Then: paired agent trials
 
 1. Choose one model/version, target Bun version, tools/permissions, time/token

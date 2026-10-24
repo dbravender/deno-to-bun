@@ -1,0 +1,18 @@
+{
+  "sha256": "159582233ddcbd3e8d81f407987ce57e424d745a1a1157c4fa48a9269a9a0c6c",
+  "files": [
+    ".github/workflows/check.yml",
+    ".gitignore",
+    ".migration-eval.json",
+    ".trial-session.json",
+    "MIGRATION.md",
+    "Makefile",
+    "bun.lock",
+    "bunfig.toml",
+    "package.json",
+    "scripts/run.sh",
+    "src/lib/greet.ts",
+    "src/main.ts",
+    "tsconfig.json"
+  ]
+}

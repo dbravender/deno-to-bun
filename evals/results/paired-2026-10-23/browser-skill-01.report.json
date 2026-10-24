@@ -1,0 +1,43 @@
+{
+  "case": "browser",
+  "runtime": "bun",
+  "passed": true,
+  "checks": [
+    {
+      "name": "frozen-install",
+      "passed": true,
+      "seconds": 0.009
+    },
+    {
+      "name": "no-deno-fallbacks",
+      "passed": true,
+      "seconds": 0.003
+    },
+    {
+      "name": "security-handoff",
+      "passed": true,
+      "seconds": 0.0
+    },
+    {
+      "name": "typecheck",
+      "passed": true,
+      "seconds": 0.06
+    },
+    {
+      "name": "typecheck-rejects-error",
+      "passed": true,
+      "seconds": 0.059
+    },
+    {
+      "name": "browser-behavior",
+      "passed": true,
+      "seconds": 0.043
+    }
+  ],
+  "evaluator_sha256": "b3b029e89cc24144f8a35fbf5647e3c33e4142b85d8180c754dc8a55098eb6d7",
+  "fresh_dependency_tree": true,
+  "versions": {
+    "bun": "1.4.4",
+    "deno": "deno 2.9.7 (stable, release, aarch64-apple-darwin)\nv8 15.0.245.2-rusty\ntypescript 6.0.3"
+  }
+}

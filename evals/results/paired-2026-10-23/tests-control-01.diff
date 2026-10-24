@@ -1,0 +1,148 @@
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/.npmrc
++++ candidate/.npmrc
+@@ -0,0 +1 @@
++@jsr:registry=https://npm.jsr.io
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,31 @@
++# Bun migration
++
++Use Bun 1.4.4. Install with `bun install --frozen-lockfile`, run the suite with
++`bun run test`, and check types with `bun run typecheck` (or the preserved
++`bun run check` entry point). The test script checks types before executing tests,
++as the previous Deno test task did. TypeScript uses `strict: true` and checks
++all source and test files without emitting JavaScript or skipping library checks.
++No run, serve, or build task existed in the original project.
++
++The assertion dependency remains `@std/assert` 1.0.19, installed through its JSR
++npm distribution using an npm alias. `.npmrc` routes the JSR scope to its registry;
++`bun.lock` records exact dependency resolutions. No Deno runtime or configuration
++is needed. The count parser and all assertion expressions remain unchanged.
++
++Deno test registrations now use `bun:test`. The two awaited Deno steps become
++two synchronous tests grouped under the same parent suite; their original bodies
++are synchronous, so completion semantics remain intact. Bun reports five passing
++tests and one skip, where Deno reported four passing tests with two steps and one
++ignored test. The async test is still awaited, object equality still uses the
++same assertion library, and the expensive opt-in test stays skipped.
++
++Bun does not provide Deno's permission sandbox or Deno test resource/operation
++sanitizers. Tests now run with the process's normal filesystem, network, and
++subprocess access; use operating-system isolation when running untrusted code.
++Bun's direct `bun test` command transpiles without type checking; use `bun run test`
++to preserve checking before tests.
++
++Validation: the original Deno suite and strict check passed. After migration,
++Bun's test suite, strict typecheck, preserved check script, and frozen-lockfile
++install passed. A temporary invalid assignment was rejected by the typecheck
++script and removed after verification. Formatting/lint replacement is out of scope.
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,8 +0,0 @@
+-{
+-  "imports": { "@std/assert": "jsr:@std/assert@1.0.19" },
+-  "tasks": {
+-    "test": "deno test src/",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/deno.lock
++++ candidate/deno.lock
+@@ -0,0 +1,23 @@
++{
++  "version": "5",
++  "specifiers": {
++    "jsr:@std/assert@1.0.19": "1.0.19",
++    "jsr:@std/internal@^1.0.12": "1.0.12"
++  },
++  "jsr": {
++    "@std/assert@1.0.19": {
++      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
++      "dependencies": [
++        "jsr:@std/internal"
++      ]
++    },
++    "@std/internal@1.0.12": {
++      "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
++    }
++  },
++  "workspace": {
++    "dependencies": [
++      "jsr:@std/assert@1.0.19"
++    ]
++  }
++}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,17 @@
++{
++  "name": "count",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "test": "bun run typecheck && bun test ./src",
++    "check": "bun run typecheck",
++    "typecheck": "tsc --noEmit"
++  },
++  "dependencies": {
++    "@std/assert": "npm:@jsr/std__assert@1.0.19"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4",
++    "typescript": "7.0.2"
++  }
++}
+--- original/src/count_test.ts
++++ candidate/src/count_test.ts
+@@ -1,21 +1,20 @@
++import { describe, test } from "bun:test";
+ import { assertEquals, assertThrows } from "@std/assert";
+ import { parseCount } from "./count.ts";
+ 
+-Deno.test("valid count", () => assertEquals(parseCount("2"), 2));
+-Deno.test("invalid count", () => {
++test("valid count", () => assertEquals(parseCount("2"), 2));
++test("invalid count", () => {
+   assertThrows(() => parseCount("-1"), RangeError);
+ });
+-Deno.test("async completion", async () => {
++test("async completion", async () => {
+   await Promise.resolve();
+   assertEquals(parseCount("3"), 3);
+   assertEquals({ values: [1, 2], name: "Ada" }, { name: "Ada", values: [1, 2] });
+ });
+-Deno.test("nested assertions", async (context) => {
+-  await context.step("one", () => assertEquals(parseCount("1"), 1));
+-  await context.step("four", () => assertEquals(parseCount("4"), 4));
++describe("nested assertions", () => {
++  test("one", () => assertEquals(parseCount("1"), 1));
++  test("four", () => assertEquals(parseCount("4"), 4));
+ });
+-Deno.test({
+-  name: "expensive opt-in",
+-  ignore: true,
+-  fn: () => { throw new Error("must remain skipped"); },
++test.skip("expensive opt-in", () => {
++  throw new Error("must remain skipped");
+ });
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,13 @@
++{
++  "compilerOptions": {
++    "target": "ESNext",
++    "lib": ["ESNext", "DOM", "DOM.Iterable"],
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "allowImportingTsExtensions": true,
++    "noEmit": true,
++    "strict": true,
++    "types": ["bun"]
++  },
++  "include": ["src/**/*.ts"]
++}

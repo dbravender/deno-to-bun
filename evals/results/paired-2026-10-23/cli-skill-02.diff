@@ -1,0 +1,155 @@
+--- original/.github/workflows/check.yml
++++ candidate/.github/workflows/check.yml
+@@ -5,5 +5,8 @@
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+-      - uses: denoland/setup-deno@v2
+-      - run: deno task check
++      - uses: oven-sh/setup-bun@v2
++        with:
++          bun-version: 1.4.4
++      - run: bun install --frozen-lockfile
++      - run: bun run typecheck
+--- original/.gitignore
++++ candidate/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+--- original/MIGRATION.md
++++ candidate/MIGRATION.md
+@@ -0,0 +1,38 @@
++# Bun migration
++
++Requires Bun 1.4.4 (also pinned in CI and packageManager). Install with
++`bun install --frozen-lockfile`.
++
++- Run: `bun run run [name] [count]`, `bun src/main.ts [name] [count]`, or
++  `bash scripts/run.sh [name] [count]` (the shell launcher also works from other
++  working directories). The existing source and shell file modes are retained.
++- Check: `bun run typecheck`, `bun run check`, or `make check`. Native Bun checking
++  uses strict tsconfig settings and includes every TypeScript file under src,
++  including files not imported by the CLI. The @lib alias is shared by execution
++  and checking through tsconfig paths.
++- The original project had no tests, serve task, build task, assets, or runtime
++  dependencies. No replacement formatter or linter is introduced.
++
++Deno configuration and execution have been removed. Arguments, name trimming,
++JSON fields, environment values, and invalid-count stderr/exit status 2 are
++preserved. Bun automatic dotenv loading is disabled in bunfig.toml and explicitly
++in the CLI launch commands, preserving the original explicit environment behavior.
++The new development-only dependency @types/bun is pinned to 1.4.4; bun.lock records
++its resolved dependency graph. No existing dependency versions were replaced.
++
++Security difference: the old Deno command allowed environment access while
++restricting filesystem, network, and subprocess access by default. Bun does not
++provide that permission sandbox; the CLI has normal process permissions. Run it
++under OS/container isolation when handling untrusted code. The migrated CLI
++itself only reads arguments/environment and writes console output. Dependency
++lifecycle scripts have not been broadly enabled.
++
++Validation: baseline Deno strict checking passed. After migration, strict Bun
++checking and make check passed. Eight cases (defaults, trimmed/empty names,
++valid/invalid counts, and extra arguments) were compared against the Deno baseline
++through direct Bun, package script, and shell launcher: 24 matching outputs and
++exit statuses. A harmless .env fixture stayed unloaded through all three paths.
++An unimported source type-error probe was rejected, then removed. Clean frozen
++installation and checks were verified with Deno absent from PATH. Hosted GitHub
++Actions was updated but not executed remotely. Formatter/linter replacement and
++broad reformatting remain outside scope.
+--- original/Makefile
++++ candidate/Makefile
+@@ -1,3 +1,3 @@
+ .PHONY: check
+ check:
+-	deno task check
++	bun run typecheck
+--- original/bunfig.toml
++++ candidate/bunfig.toml
+@@ -0,0 +1,2 @@
++# Preserve explicit environment loading for both Bun scripts and direct runs.
++env = false
+--- original/deno.json
++++ candidate/deno.json
+@@ -1,8 +0,0 @@
+-{
+-  "imports": { "@lib/": "./src/lib/" },
+-  "tasks": {
+-    "run": "deno run --allow-env src/main.ts",
+-    "check": "deno check src/**/*.ts"
+-  },
+-  "compilerOptions": { "strict": true }
+-}
+--- original/package.json
++++ candidate/package.json
+@@ -0,0 +1,14 @@
++{
++  "name": "greeting-cli",
++  "private": true,
++  "type": "module",
++  "packageManager": "bun@1.4.4",
++  "scripts": {
++    "run": "bun --no-env-file src/main.ts",
++    "typecheck": "bun check --no-script -p tsconfig.json",
++    "check": "bun run typecheck"
++  },
++  "devDependencies": {
++    "@types/bun": "1.4.4"
++  }
++}
+--- original/scripts/run.sh
++++ candidate/scripts/run.sh
+@@ -1,4 +1,4 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+ cd "$(dirname "$0")/.."
+-deno run --allow-env src/main.ts "$@"
++bun --no-env-file src/main.ts "$@"
+--- original/src/main.ts
++++ candidate/src/main.ts
+@@ -1,15 +1,15 @@
+-#!/usr/bin/env -S deno run --allow-env
++#!/usr/bin/env -S bun --no-env-file
+ import { greet } from "@lib/greet.ts";
+ 
+-const [name = "world", countText = "1"] = Deno.args;
++const [name = "world", countText = "1"] = process.argv.slice(2);
+ const count = Number(countText);
+ if (!Number.isInteger(count) || count < 1) {
+   console.error("count must be a positive integer");
+-  Deno.exit(2);
++  process.exit(2);
+ }
+ console.log(JSON.stringify({
+   message: greet(name),
+   count,
+-  mode: Deno.env.get("APP_MODE") ?? null,
+-  implicit: Deno.env.get("EVAL_IMPLICIT_ENV") ?? null,
++  mode: process.env.APP_MODE ?? null,
++  implicit: process.env.EVAL_IMPLICIT_ENV ?? null,
+ }));
+--- original/tsconfig.json
++++ candidate/tsconfig.json
+@@ -0,0 +1,23 @@
++{
++  "compilerOptions": {
++    "strict": true,
++    "noImplicitOverride": true,
++    "noUncheckedIndexedAccess": true,
++    "target": "ESNext",
++    "module": "Preserve",
++    "moduleResolution": "Bundler",
++    "allowImportingTsExtensions": true,
++    "noEmit": true,
++    "types": [
++      "bun"
++    ],
++    "paths": {
++      "@lib/*": [
++        "./src/lib/*"
++      ]
++    }
++  },
++  "include": [
++    "src/**/*.ts"
++  ]
++}

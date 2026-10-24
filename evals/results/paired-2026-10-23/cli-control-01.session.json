@@ -1,0 +1,14 @@
+{
+  "epoch_start": 1792801351,
+  "epoch_end": 1792801442,
+  "seconds": 91,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "Original Deno baseline output and strict check captured",
+    "Bun frozen-lockfile installation passed",
+    "bun run typecheck and make check passed",
+    "35 automated CLI, environment, launcher, and negative typecheck assertions passed"
+  ],
+  "handoff": "Migrated runtime, alias configuration, package scripts, Makefile, shell launcher and CI to Bun 1.4.4. Generated bun.lock and documented security differences in MIGRATION.md. No commit or push. Hosted CI not executed."
+}

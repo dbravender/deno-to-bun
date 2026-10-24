@@ -1,0 +1,155 @@
+{
+  "completed": 14,
+  "pairs": 7,
+  "bom_probe": {
+    "files-control-01": {
+      "passed": true,
+      "actual": "\"\ufeffa\ufffd\"",
+      "expected": "\"\\ufeffa\ufffd\""
+    },
+    "files-control-02": {
+      "passed": true,
+      "actual": "\"\ufeffa\ufffd\"",
+      "expected": "\"\\ufeffa\ufffd\""
+    },
+    "files-skill-01": {
+      "passed": true,
+      "actual": "\"\ufeffa\ufffd\"",
+      "expected": "\"\\ufeffa\ufffd\""
+    },
+    "files-skill-02": {
+      "passed": false,
+      "actual": "\"a\ufffd\"",
+      "expected": "\"\\ufeffa\ufffd\""
+    }
+  },
+  "attempts": [
+    {
+      "id": "browser-control-01",
+      "arm": "control",
+      "raw_pass": true,
+      "seconds": 79,
+      "separate_typescript": true
+    },
+    {
+      "id": "browser-skill-01",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 84,
+      "separate_typescript": false
+    },
+    {
+      "id": "cli-control-01",
+      "arm": "control",
+      "raw_pass": false,
+      "seconds": 91,
+      "separate_typescript": false
+    },
+    {
+      "id": "cli-control-02",
+      "arm": "control",
+      "raw_pass": false,
+      "seconds": 94,
+      "separate_typescript": true
+    },
+    {
+      "id": "cli-skill-01",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 106,
+      "separate_typescript": false
+    },
+    {
+      "id": "cli-skill-02",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 117,
+      "separate_typescript": false
+    },
+    {
+      "id": "files-control-01",
+      "arm": "control",
+      "raw_pass": true,
+      "seconds": 118,
+      "separate_typescript": true
+    },
+    {
+      "id": "files-control-02",
+      "arm": "control",
+      "raw_pass": true,
+      "seconds": 145,
+      "separate_typescript": true
+    },
+    {
+      "id": "files-skill-01",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 142,
+      "separate_typescript": false
+    },
+    {
+      "id": "files-skill-02",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 130,
+      "separate_typescript": false
+    },
+    {
+      "id": "http-control-01",
+      "arm": "control",
+      "raw_pass": true,
+      "seconds": 175,
+      "separate_typescript": true
+    },
+    {
+      "id": "http-skill-01",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 136,
+      "separate_typescript": false
+    },
+    {
+      "id": "tests-control-01",
+      "arm": "control",
+      "raw_pass": false,
+      "seconds": 73,
+      "separate_typescript": true
+    },
+    {
+      "id": "tests-skill-01",
+      "arm": "skill",
+      "raw_pass": true,
+      "seconds": 79,
+      "separate_typescript": false
+    }
+  ],
+  "skill": {
+    "raw_pass": 7,
+    "attempts": 7,
+    "median_seconds": 117,
+    "separate_typescript": 0
+  },
+  "control": {
+    "raw_pass": 4,
+    "attempts": 7,
+    "median_seconds": 94,
+    "separate_typescript": 6
+  },
+  "stopped_at_user_request": true,
+  "planned_attempts": 30,
+  "adjudicated": {
+    "skill_pass": 6,
+    "control_pass": 6,
+    "attempts_per_arm": 7,
+    "both_pass_pairs": 5,
+    "skill_only_pairs": 1,
+    "control_only_pairs": 1,
+    "both_fail_pairs": 0,
+    "notes": [
+      "Two raw CLI control failures are false negatives: CI check aliases invoke real strict typecheck.",
+      "tests-control-01 left baseline-generated deno.lock contrary to removal requirement.",
+      "files-skill-02 strips a UTF-8 BOM that original Deno.readTextFile preserves; supplementary probe applied to all four completed filesystem attempts."
+    ]
+  },
+  "conclusion": "No demonstrated correctness improvement in seven completed pairs. Skill avoided separate TypeScript compiler dependencies (0/7 versus 6/7) but had higher median elapsed time (117s versus 94s). Small incomplete sample and non-blinded review limit conclusions."
+}

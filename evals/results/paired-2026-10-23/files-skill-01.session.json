@@ -1,0 +1,9 @@
+{
+  "start_epoch": 1792801363,
+  "end_epoch": 1792801505,
+  "seconds": 142,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": "Deno baseline strict check and 12 behavior checks passed. Bun strict typecheck/check and 6 regression tests (18 assertions, no skips/failures) passed, including fresh offline frozen-lockfile install with Deno absent from PATH. Argument forwarding, disabled dotenv, and child entry-point type-error detection verified.",
+  "handoff": "Migrated filesystem and subprocess APIs to Node/Bun; preserved run/check tasks and added typecheck/test. Generated bun.lock with pinned @types/bun 1.4.4. Removed Deno configuration. MIGRATION.md documents commands and sandbox/error-message differences. No commits or pushes; .migration-eval.json untouched. Local macOS validation only."
+}

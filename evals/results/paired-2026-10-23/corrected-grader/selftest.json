@@ -1,0 +1,454 @@
+{
+  "kind": "evaluator-selftest-not-agent-comparison",
+  "passed": true,
+  "runs": [
+    {
+      "case": "cli",
+      "runtime": "deno",
+      "passed": true,
+      "checks": [
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.21
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.209
+        },
+        {
+          "name": "cli-behavior",
+          "passed": true,
+          "seconds": 0.06
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "cli",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.012
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.007
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.036
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.033
+        },
+        {
+          "name": "cli-behavior",
+          "passed": true,
+          "seconds": 0.12
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "files",
+      "runtime": "deno",
+      "passed": true,
+      "checks": [
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.207
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.199
+        },
+        {
+          "name": "files-behavior",
+          "passed": true,
+          "seconds": 0.126
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "files",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.011
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.006
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.037
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.036
+        },
+        {
+          "name": "files-behavior",
+          "passed": true,
+          "seconds": 0.175
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "http",
+      "runtime": "deno",
+      "passed": true,
+      "checks": [
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.207
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.209
+        },
+        {
+          "name": "http-behavior",
+          "passed": true,
+          "seconds": 0.027
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "http",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.011
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.007
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.04
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.037
+        },
+        {
+          "name": "http-behavior",
+          "passed": true,
+          "seconds": 0.021
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "tests",
+      "runtime": "deno",
+      "passed": true,
+      "checks": [
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.208
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.202
+        },
+        {
+          "name": "tests-behavior",
+          "passed": true,
+          "seconds": 1.403
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "tests",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.015
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.011
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.037
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.035
+        },
+        {
+          "name": "tests-behavior",
+          "passed": true,
+          "seconds": 0.186
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "browser",
+      "runtime": "deno",
+      "passed": true,
+      "checks": [
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.193
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.194
+        },
+        {
+          "name": "browser-behavior",
+          "passed": true,
+          "seconds": 0.049
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "browser",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.024
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.011
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.043
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.036
+        },
+        {
+          "name": "browser-behavior",
+          "passed": true,
+          "seconds": 0.059
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    },
+    {
+      "case": "cli",
+      "runtime": "bun",
+      "passed": true,
+      "checks": [
+        {
+          "name": "frozen-install",
+          "passed": true,
+          "seconds": 0.011
+        },
+        {
+          "name": "no-deno-fallbacks",
+          "passed": true,
+          "seconds": 0.007
+        },
+        {
+          "name": "security-handoff",
+          "passed": true,
+          "seconds": 0.0
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "seconds": 0.034
+        },
+        {
+          "name": "typecheck-rejects-error",
+          "passed": true,
+          "seconds": 0.034
+        },
+        {
+          "name": "cli-behavior",
+          "passed": true,
+          "seconds": 0.129
+        }
+      ],
+      "evaluator_sha256": "10cfcf35a8300f0216a94008f91437c46e0326f9b0c16a525c4eecf6d6922c88",
+      "fresh_dependency_tree": true
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "fake-ci-alias",
+      "rejected": true,
+      "failed_checks": [
+        "cli-behavior"
+      ]
+    },
+    {
+      "name": "silent-typecheck",
+      "rejected": true,
+      "failed_checks": [
+        "typecheck-rejects-error",
+        "cli-behavior"
+      ]
+    },
+    {
+      "name": "weakened-types",
+      "rejected": true,
+      "failed_checks": [
+        "typecheck-rejects-error",
+        "cli-behavior"
+      ]
+    },
+    {
+      "name": "shell-fallback",
+      "rejected": true,
+      "failed_checks": [
+        "no-deno-fallbacks",
+        "cli-behavior"
+      ]
+    },
+    {
+      "name": "implicit-dotenv",
+      "rejected": true,
+      "failed_checks": [
+        "cli-behavior"
+      ]
+    },
+    {
+      "name": "overwrite-results",
+      "rejected": true,
+      "failed_checks": [
+        "files-behavior"
+      ]
+    },
+    {
+      "name": "dirent-property",
+      "rejected": true,
+      "failed_checks": [
+        "typecheck",
+        "files-behavior"
+      ]
+    },
+    {
+      "name": "stripped-utf8-bom",
+      "rejected": true,
+      "failed_checks": [
+        "files-behavior"
+      ]
+    },
+    {
+      "name": "static-prefix-escape",
+      "rejected": true,
+      "failed_checks": [
+        "http-behavior"
+      ]
+    },
+    {
+      "name": "lost-test-assertions",
+      "rejected": true,
+      "failed_checks": [
+        "tests-behavior"
+      ]
+    },
+    {
+      "name": "lost-nested-assertion",
+      "rejected": true,
+      "failed_checks": [
+        "tests-behavior"
+      ]
+    },
+    {
+      "name": "protected-asset",
+      "rejected": true,
+      "failed_checks": [
+        "browser-behavior"
+      ]
+    }
+  ],
+  "versions": {
+    "bun": "1.4.4",
+    "deno": "deno 2.9.7 (stable, release, aarch64-apple-darwin)\nv8 15.0.245.2-rusty\ntypescript 6.0.3"
+  }
+}

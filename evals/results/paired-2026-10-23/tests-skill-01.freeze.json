@@ -1,0 +1,15 @@
+{
+  "sha256": "003731e5b719b8acd4700079bfcb379cd74f713c709e35a48baef5357f4eb299",
+  "files": [
+    ".migration-eval.json",
+    ".npmrc",
+    ".trial-session.json",
+    "MIGRATION.md",
+    "bun.lock",
+    "bunfig.toml",
+    "package.json",
+    "src/count.test.ts",
+    "src/count.ts",
+    "tsconfig.json"
+  ]
+}

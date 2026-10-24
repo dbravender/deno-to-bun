@@ -1,0 +1,14 @@
+{
+  "start_epoch": 1792801602,
+  "end_epoch": 1792801681,
+  "seconds": 79,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "Deno baseline: 4 passing parents, 2 passing steps, 1 skipped; strict check passed",
+    "Bun 1.4.4: typecheck and legacy check alias passed; 5 test cases passed, 1 skipped",
+    "Disposable clean frozen-lockfile installation passed typecheck and tests with Deno unavailable on PATH",
+    "Strict checker rejected an intentionally invalid TypeScript source in disposable verification copy"
+  ],
+  "handoff": "Removed Deno config, execution, and lockfile; preserved assertion package 1.0.19 and baseline internal dependency 1.0.12; documented test grouping, sandbox/sanitizer changes, dotenv behavior, and commands in MIGRATION.md; no deployment or hosted CI run."
+}

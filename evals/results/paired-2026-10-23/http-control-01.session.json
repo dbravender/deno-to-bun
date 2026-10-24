@@ -1,0 +1,15 @@
+{
+  "start_epoch": 1792801486,
+  "end_epoch": 1792801661,
+  "seconds": 175,
+  "token_usage": null,
+  "cost_usd": null,
+  "validation": [
+    "bun install --frozen-lockfile passed",
+    "bun run typecheck passed with strict TypeScript",
+    "bun run check passed",
+    "19 independent original-Deno versus Bun HTTP comparisons passed for status, raw body, and content-type",
+    "Startup JSON and serve root-argument forwarding verified"
+  ],
+  "handoff": "Migration complete. Run bun install --frozen-lockfile, then bun run serve /absolute/static/root. MIGRATION.md documents permission sandbox removal, Bun transport defaults, and stream transfer framing. No existing test/build/run tasks or dependencies were present; serve/check retained. No commit or push performed."
+}

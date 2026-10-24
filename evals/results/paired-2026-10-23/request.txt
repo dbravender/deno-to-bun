@@ -1,0 +1,10 @@
+Migrate this disposable Deno project to the supplied Bun executable.
+Preserve observable behavior, existing dependency versions, strict checking,
+test assertions/skips, protected assets, and operational entry points. Remove
+Deno execution/configuration; do not hide it behind Bun scripts. Provide a real
+`typecheck` script, and preserve run/serve/test/build tasks that exist. Generate
+bun.lock. Document intentional behavior/security differences in MIGRATION.md.
+Do not change global tools, deploy, monitor releases, or modify evaluation files
+outside this project. Do not add a framework or weaken types to bypass failures.
+Formatter/linter replacement and broad reformatting are out of scope for this
+initial benchmark. You may use installed Bun capabilities and relevant docs.

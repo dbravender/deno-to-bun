@@ -1,0 +1,299 @@
+{
+  "kind": "paired-agent-trials",
+  "attempts": [
+    {
+      "id": "cli-control-01",
+      "pair": "cli-01",
+      "arm": "control",
+      "case": "cli",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "cli-control-01.report.json",
+      "seconds": 91,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "cli-skill-01",
+      "pair": "cli-01",
+      "arm": "skill",
+      "case": "cli",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "cli-skill-01.report.json",
+      "seconds": 106,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "files-skill-01",
+      "pair": "files-01",
+      "arm": "skill",
+      "case": "files",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "files-skill-01.report.json",
+      "seconds": 142,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "files-control-01",
+      "pair": "files-01",
+      "arm": "control",
+      "case": "files",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "files-control-01.report.json",
+      "seconds": 118,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "http-control-01",
+      "pair": "http-01",
+      "arm": "control",
+      "case": "http",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "http-control-01.report.json",
+      "seconds": 175,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "http-skill-01",
+      "pair": "http-01",
+      "arm": "skill",
+      "case": "http",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "http-skill-01.report.json",
+      "seconds": 136,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "tests-skill-01",
+      "pair": "tests-01",
+      "arm": "skill",
+      "case": "tests",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "tests-skill-01.report.json",
+      "seconds": 79,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "tests-control-01",
+      "pair": "tests-01",
+      "arm": "control",
+      "case": "tests",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "tests-control-01.report.json",
+      "seconds": 73,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "browser-control-01",
+      "pair": "browser-01",
+      "arm": "control",
+      "case": "browser",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "browser-control-01.report.json",
+      "seconds": 79,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "browser-skill-01",
+      "pair": "browser-01",
+      "arm": "skill",
+      "case": "browser",
+      "repeat": 1,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "browser-skill-01.report.json",
+      "seconds": 84,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "cli-skill-02",
+      "pair": "cli-02",
+      "arm": "skill",
+      "case": "cli",
+      "repeat": 2,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "cli-skill-02.report.json",
+      "seconds": 117,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "cli-control-02",
+      "pair": "cli-02",
+      "arm": "control",
+      "case": "cli",
+      "repeat": 2,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "cli-control-02.report.json",
+      "seconds": 94,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "files-control-02",
+      "pair": "files-02",
+      "arm": "control",
+      "case": "files",
+      "repeat": 2,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "files-control-02.report.json",
+      "seconds": 145,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    },
+    {
+      "id": "files-skill-02",
+      "pair": "files-02",
+      "arm": "skill",
+      "case": "files",
+      "repeat": 2,
+      "model": "inherited parent model; backend revision unavailable",
+      "request_sha256": "ffe98c7fd020979bbfb14d517328d6692c50e5c2feca713704d1ba1f3bb952bc",
+      "budget": {
+        "seconds": 600,
+        "tokens": 16000
+      },
+      "tools": [
+        "same inherited tools; shell, filesystem, web docs; no delegation"
+      ],
+      "report": "files-skill-02.report.json",
+      "seconds": 130,
+      "cost_usd": null,
+      "manual_repairs": 0,
+      "review": null
+    }
+  ]
+}

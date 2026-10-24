@@ -1,0 +1,39 @@
+{
+  "study": "paired fresh-agent Deno-to-Bun migration trials",
+  "created_utc": "2026-10-24T00:23:39.231537+00:00",
+  "pairs": 15,
+  "attempts": 30,
+  "cases": [
+    "cli",
+    "files",
+    "http",
+    "tests",
+    "browser"
+  ],
+  "repeats": 3,
+  "budget": {
+    "seconds": 600,
+    "tokens_target": 16000,
+    "token_limit_enforcement": "instruction only; actual usage unavailable"
+  },
+  "runtime": {
+    "bun": "1.4.4+38afee6c8",
+    "deno": "2.9.7"
+  },
+  "model": "same model inherited from parent; exact backend ID/revision not exposed by collaboration tool",
+  "isolation": "one fork_turns=none agent per attempt; separate candidate; explicit no reading peers, grader or references; control explicitly excludes deno-to-bun skill",
+  "order": "case order fixed; first arm alternates by case and repeat; up to three overlapping attempts",
+  "cache": "shared runtime/package caches; evaluator selftest warms required packages before all attempts; fresh-dependency acceptance snapshots",
+  "acceptance": "existing evals/run.py, unchanged; each final submission frozen before independent grading; no repairs",
+  "review": "parent reviews final diffs and handoffs; reviewer is aware of arm (not blinded)",
+  "metrics": "agent-recorded elapsed seconds; unavailable token usage/cost remain null; no manual repairs",
+  "limitations": [
+    "Public, small synthetic fixtures",
+    "Agents share a host and tool/skill catalog; filesystem access restrictions are instructions, not OS isolation",
+    "Same base model but backend identity/seed unavailable",
+    "Concurrency and shared caches add timing noise",
+    "No production, hosted CI or real browser end-to-end claims"
+  ],
+  "skill_sha256": "30c0ab41cdb580e3480fae16b9408a7fb864ca48f08ff80e3628dbe5aab47a66",
+  "repo_commit": "dd40c2b9d2d4d4071b4d15108e0bfda33d9a9052"
+}
